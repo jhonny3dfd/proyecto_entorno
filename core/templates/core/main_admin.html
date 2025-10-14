@@ -1,1 +1,12 @@
-se ha autentificado
+{% extends "base.html" %} 
+
+{% block navbar %}
+<nav>
+    <a href="{% url 'direccion_list' %}">Organizaciones (Direcciones)</a>
+    <a href="{% url 'solicitud_list' %}">Incidencias</a>.
+</nav>
+{% endblock navbar %}
+
+{% block content %}
+    <h1>Bienvenido al Panel de Administración</h1>
+{% endblock content %}

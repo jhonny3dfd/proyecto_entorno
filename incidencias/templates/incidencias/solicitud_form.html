@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h1>Crear Nueva Solicitud (Incidencia)</h1>
+    
+    <form method="post">
+        {% csrf_token %}
+        
+        {{ form.as_p }}
+        
+        <button type="submit">Guardar Solicitud</button>
+        <a href="{% url 'solicitud_list' %}">Cancelar</a>
+    </form>
+{% endblock content %}

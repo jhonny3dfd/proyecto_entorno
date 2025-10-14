@@ -1,0 +1,9 @@
+{% for dir in direcciones %}
+    <li>
+        <h3>
+            <a href="{% url 'direccion_detail' dir.pk %}">{{ dir.nombre_direccion }}</a>
+        </h3>
+        <p>Encargado: {{ dir.nombre_encargado }}</p> 
+        <p>Correo: {{ dir.correo_encargado }}</p>
+    </li>
+{% endfor %}

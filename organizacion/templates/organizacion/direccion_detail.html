@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Detalle de Dirección: {{ direccion.nombre_direccion }}</h2>
+    
+    <p><strong>Encargado:</strong> {{ direccion.nombre_encargado }}</p>
+    <p><strong>Correo:</strong> {{ direccion.correo_encargado }}</p>
+    
+    <hr>
+    
+    <h3>Departamentos en esta Dirección:</h3>
+    {% comment %} 
+        El campo 'departamento_set' viene de la relación ForeignKey inversa 
+        del modelo Departamento.
+    {% endcomment %}
+    {% if direccion.departamento_set.all %}
+        <ul>
+            {% for depto in direccion.departamento_set.all %}
+                <li>
+                    <a href="{% url 'departamento_detail' depto.pk %}">
+                        {{ depto.departamento }}
+                    </a> 
+                    (Encargado: {{ depto.nombre_encargado }})
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Esta Dirección no tiene departamentos registrados.</p>
+    {% endif %}
+
+    <hr>
+    
+    <p><a href="{% url 'direccion_list' %}">Volver al listado de Direcciones</a></p>
+{% endblock content %}

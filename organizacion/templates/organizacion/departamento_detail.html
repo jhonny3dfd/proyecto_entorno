@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Departamento: {{ departamento.departamento }}</h2>
+    
+    <p><strong>Dirección Padre:</strong> {{ departamento.direccion.nombre_direccion }}</p>
+    <p><strong>Encargado:</strong> {{ departamento.nombre_encargado }}</p>
+    <p><strong>Correo:</strong> {{ departamento.correo_encargado }}</p>
+    
+    <hr>
+    
+    <h3>Cuadrillas en este Departamento:</h3>
+    {% comment %} 
+        El campo 'cuadrilla_set' viene de la relación ForeignKey inversa 
+        del modelo Cuadrilla.
+    {% endcomment %}
+    {% if departamento.cuadrilla_set.all %}
+        <ul>
+            {% for cuadrilla in departamento.cuadrilla_set.all %}
+                <li>{{ cuadrilla.nombre_cuadrilla }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Este Departamento no tiene cuadrillas asignadas.</p>
+    {% endif %}
+
+    <hr>
+    
+    <p><a href="{% url 'direccion_detail' departamento.direccion.pk %}">Volver a la Dirección {{ departamento.direccion.nombre_direccion }}</a></p>
+{% endblock content %}

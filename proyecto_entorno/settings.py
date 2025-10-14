@@ -39,6 +39,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'core',
+    'usuarios',
+    'incidencias',
+    'organizacion',
 ]
 
 MIDDLEWARE = [
@@ -56,7 +59,9 @@ ROOT_URLCONF = 'proyecto_entorno.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [
+            BASE_DIR / 'templates', 
+        ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -110,7 +115,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'es'
 
-TIME_ZONE = 'CHILE/Continental'
+TIME_ZONE = 'America/Santiago'
 
 USE_I18N = True
 

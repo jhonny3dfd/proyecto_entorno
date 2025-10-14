@@ -1,6 +1,6 @@
-from django.urls import path
+from django.urls import path # pyright: ignore[reportMissingModuleSource]
 from .views import SignUpView, ProfileUpdate, EmailUpdate
-from django.contrib import admin
+from django.contrib import admin # type: ignore
 from registration import views
 
 urlpatterns = [

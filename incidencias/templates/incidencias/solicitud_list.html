@@ -1,0 +1,38 @@
+{% extends "core/main_admin.html" %}
+
+{% block content %}
+    <h1>Listado de Solicitudes (Incidencias)</h1>
+    
+    {% if solicitudes %}
+        <table border="1" width="100%">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Tipo de Incidencia</th>
+                    <th>Estado</th>
+                    <th>Cuadrilla Asignada</th>
+                    <th>Fecha Creación</th>
+                    <th>Detalle</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sol in solicitudes %}
+                    <tr>
+                        <td>{{ sol.id }}</td>
+                        <td>{{ sol.tipo_incidencia }}</td>
+                        <td><strong>{{ sol.estado }}</strong></td>
+                        <td>{{ sol.cuadrilla.nombre_cuadrilla|default:"Sin asignar" }}</td>
+                        <td>{{ sol.fecha_creacion|date:"Y-m-d H:i" }}</td>
+                        <td><a href="{% url 'solicitud_detail' sol.pk %}">Ver</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No hay solicitudes de incidencia registradas.</p>
+    {% endif %}
+    
+    <p>
+       <a href="{% url 'solicitud_create' %}">Crear Nueva Solicitud</a>
+    </p>
+{% endblock content %}
