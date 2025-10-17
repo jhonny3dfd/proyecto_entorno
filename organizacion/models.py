@@ -4,19 +4,21 @@ class Direccion(models.Model):
     nombre_encargado = models.CharField(max_length=200)
     correo_encargado = models.EmailField()
     nombre_direccion = models.CharField(max_length=255)
+    # AÑADIR ESTE CAMPO para Activar/Bloquear
+    activa = models.BooleanField(default=True, verbose_name="Dirección Activa") 
 
     def __str__(self):
         return self.nombre_direccion
-
 class Departamento(models.Model):
     direccion = models.ForeignKey(Direccion, on_delete=models.CASCADE)
     nombre_encargado = models.CharField(max_length=200)
     correo_encargado = models.EmailField()
-    departamento = models.CharField(max_length=200) # Nombre del departamento
+    departamento = models.CharField(max_length=200, verbose_name="Departamento") # Nombre del departamento
+    activo = models.BooleanField(default=True, verbose_name="Departamento Activo") # ¡CAMPO A AÑADIR!
 
     def __str__(self):
         return self.departamento
-
+    
 class Cuadrilla(models.Model):
     departamento = models.ForeignKey(Departamento, on_delete=models.CASCADE)
     nombre_cuadrilla = models.CharField(max_length=200)

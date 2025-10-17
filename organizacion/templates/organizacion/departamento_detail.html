@@ -1,19 +1,33 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <h2>Departamento: {{ departamento.departamento }}</h2>
+    <h2>Detalle de Departamento: {{ departamento.departamento }}</h2>
     
-    <p><strong>Dirección Padre:</strong> {{ departamento.direccion.nombre_direccion }}</p>
+    {# ------------------------------------------- #}
+    {# Contenido a añadir para mostrar la información #}
+    {# ------------------------------------------- #}
+    <p><strong>Nombre del Departamento:</strong> {{ departamento.departamento }}</p>
+    <p><strong>Dirección a la que pertenece:</strong> 
+        <a href="{% url 'organizacion:direccion_detail' departamento.direccion.pk %}">
+            {{ departamento.direccion.nombre_direccion }}
+        </a>
+    </p>
     <p><strong>Encargado:</strong> {{ departamento.nombre_encargado }}</p>
     <p><strong>Correo:</strong> {{ departamento.correo_encargado }}</p>
+    
+    {% comment %} Asumiendo que agregaste el campo 'activo' al modelo Departamento {% endcomment %}
+    <p><strong>Estado:</strong> 
+        {% if departamento.activo %}
+            <span style="color: green;">Activo</span>
+        {% else %}
+            <span style="color: red;">Bloqueado</span>
+        {% endif %}
+    </p>
     
     <hr>
     
     <h3>Cuadrillas en este Departamento:</h3>
-    {% comment %} 
-        El campo 'cuadrilla_set' viene de la relación ForeignKey inversa 
-        del modelo Cuadrilla.
-    {% endcomment %}
+    {# (Aquí deberías listar las cuadrillas si ya implementaste ese modelo/relación) #}
     {% if departamento.cuadrilla_set.all %}
         <ul>
             {% for cuadrilla in departamento.cuadrilla_set.all %}
@@ -26,5 +40,10 @@
 
     <hr>
     
-    <p><a href="{% url 'direccion_detail' departamento.direccion.pk %}">Volver a la Dirección {{ departamento.direccion.nombre_direccion }}</a></p>
+    {# Enlace para volver a la Dirección (Ya corregido en un paso anterior) #}
+    <p><a href="{% url 'organizacion:direccion_detail' departamento.direccion.pk %}">Volver a la Dirección {{ departamento.direccion.nombre_direccion }}</a></p>
+    
+    {# Enlace para volver a la lista principal de departamentos #}
+    <p><a href="{% url 'organizacion:departamento_list' %}">Volver al listado de Departamentos</a></p>
+
 {% endblock content %}
