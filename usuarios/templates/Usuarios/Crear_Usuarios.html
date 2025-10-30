@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Crear Usuario</title>
+</head>
+<body>
+    <h1>Crear Usuario</h1>
+    
+    <form method="POST">
+        {% csrf_token %}
+        
+        <label>Nombre:</label><br>
+        <input type="text" name="nombre" required><br><br>
+        
+        <label>Apellido:</label><br>
+        <input type="text" name="apellido" required><br><br>
+        
+        <label>Correo:</label><br>
+        <input type="email" name="correo" required><br><br>
+        
+        <label>Teléfono:</label><br>
+        <input type="text" name="telefono" required><br><br>
+        
+        <label>Contraseña:</label><br>
+        <input type="password" name="contraseña" required><br><br>
+        
+        <label>Rol:</label><br>
+        <select name="rol" required>
+            <option value="">Seleccione un rol...</option>
+            {% for rol in roles %}
+                <option value="{{ rol.id }}">{{ rol.nombre_rol }}</option>
+            {% endfor %}
+        </select><br><br>
+        <button type="submit">Crear Usuario</button>
+        <a href="{% url 'menu_usuarios' %}">
+            <button type="button">Volver</button>
+        </a>
+    </form>
+</body>
+</html>

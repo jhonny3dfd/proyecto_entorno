@@ -4,7 +4,7 @@
     <h2>Listado de Departamentos</h2>
     
     <p>
-        {# Link de Creación #}
+        {# Link de Creación requerido #}
         <a href="{% url 'organizacion:departamento_create' %}">Crear Nuevo Departamento</a>
     </p>
 
@@ -24,11 +24,11 @@
                 {% for depto in departamentos %}
                 <tr>
                     <td>{{ forloop.counter }}</td>
-                    <td>{{ depto.departamento }}</td>
+                    <td>{{ depto.nombre_departamento }}</td> {# Asume el cambio a nombre_departamento en models.py #}
                     <td>{{ depto.nombre_encargado }}</td>
                     <td>{{ depto.direccion.nombre_direccion }}</td>
                     <td>
-                        {# Mostrar el estado Activo/Bloqueado (Asumiendo campo 'activo' en el modelo) #}
+                        {# Mostrar el estado Activo/Bloqueado #}
                         {% if depto.activo %}
                             <span style="color: green;">Activo</span>
                         {% else %}

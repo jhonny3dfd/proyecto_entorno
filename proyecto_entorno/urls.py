@@ -17,13 +17,13 @@ Including another URLconf
 from django.contrib import admin # type: ignore
 from django.urls import path, include # pyright: ignore[reportMissingModuleSource]
 from core.urls import core_urlpatterns
-#from usuarios.urls import usuarios_urlpatterns
+from usuarios.urls import usuarios_urlpatterns
 from incidencias.urls import incidencias_urlpatterns
 
 
 urlpatterns = [
     path('organizacion/', include('organizacion.urls')),
-    #path('',include(usuarios_urlpatterns)),
+    path('', include(usuarios_urlpatterns)),
     path('',include(incidencias_urlpatterns)),
     path('',include(core_urlpatterns)),
     path('admin/', admin.site.urls),

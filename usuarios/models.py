@@ -15,6 +15,7 @@ class Usuario(models.Model):
     correo = models.EmailField(unique=True)
     telefono = models.CharField(max_length=20)
     contraseña = models.CharField(max_length=128) # Almacenará el hash de la contraseña
+    esta_activo = models.BooleanField(default=True)
 
     def __str__(self):
         return f'{self.nombre} {self.apellido}'
