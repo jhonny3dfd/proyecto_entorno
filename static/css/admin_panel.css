@@ -1,0 +1,110 @@
+/* static/css/admin_panel.css */
+
+/* --- Colores (Inspirados en tu login) --- */
+:root {
+    --color-sidebar-bg: #4a5568;  /* Un gris oscuro/azulado */
+    --color-sidebar-links: #e2e8f0; /* Texto claro */
+    --color-sidebar-links-hover: #ffffff;
+    --color-sidebar-links-active: #ffffff;
+    --color-sidebar-footer: #a0aec0; /* Texto de "cerrar sesión" */
+    --color-content-bg: #f7fafc;  /* Fondo principal muy claro */
+    --color-content-text: #2d3748;
+    --color-primary-border: #0d47a1; /* Borde azul del login */
+}
+
+/* --- Estructura General --- */
+body, html {
+    height: 100%;
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: var(--color-content-bg);
+}
+
+.admin-wrapper {
+    display: flex;
+    height: 100vh; /* Ocupa toda la altura de la pantalla */
+}
+
+/* --- 1. Columna Izquierda (Sidebar) --- */
+.sidebar {
+    flex: 0 0 260px; /* Ancho fijo de 260px */
+    background-color: var(--color-sidebar-bg);
+    color: var(--color-sidebar-links);
+    padding: 20px;
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column; /* Apila los elementos verticalmente */
+    height: 100%;
+}
+
+/* Logo en el Sidebar */
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #5a6578;
+    margin-bottom: 20px;
+}
+
+.sidebar-header img {
+    width: 50px;
+    height: 50px;
+    margin-right: 15px;
+}
+
+.sidebar-header h1 {
+    font-size: 22px;
+    color: var(--color-sidebar-links-hover);
+    margin: 0;
+}
+
+/* Navegación Principal */
+.sidebar-nav {
+    flex-grow: 1; /* Ocupa todo el espacio disponible, empujando el footer hacia abajo */
+}
+
+.sidebar-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar-nav a {
+    display: block;
+    padding: 15px 10px;
+    color: var(--color-sidebar-links);
+    text-decoration: none;
+    font-size: 16px;
+    border-radius: 5px;
+    transition: background-color 0.2s ease;
+}
+
+.sidebar-nav a:hover {
+    background-color: #5a6578;
+    color: var(--color-sidebar-links-hover);
+}
+
+/* Footer del Sidebar (Cerrar Sesión) */
+.sidebar-footer a {
+    display: block;
+    padding: 15px 10px;
+    color: var(--color-sidebar-footer);
+    text-decoration: none;
+    font-size: 14px;
+    border-top: 1px solid #5a6578;
+    margin-top: 20px;
+}
+
+.sidebar-footer a:hover {
+    color: var(--color-sidebar-links-hover);
+}
+
+/* --- 2. Columna Derecha (Contenido) --- */
+.main-content {
+    flex-grow: 1; /* Ocupa todo el resto del ancho */
+    height: 100vh;
+    overflow-y: auto; /* Permite scroll si el contenido es largo */
+    padding: 40px;
+    box-sizing: border-box;
+    color: var(--color-content-text);
+}

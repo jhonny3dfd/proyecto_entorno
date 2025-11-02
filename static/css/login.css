@@ -1,0 +1,204 @@
+/* static/css/login.css */
+
+/* --- Variables de Color (ajusta esto a los colores exactos) --- */
+:root {
+    --color-primario: #0d47a1; /* Azul del borde y logo */
+    --color-boton: #8ca5a5;    /* Gris/verde del botón */
+    --color-boton-hover: #7a9595;
+    --color-texto: #333;
+    --color-borde-input: #ccc;
+    --color-fondo: #f9f9f9;
+}
+
+
+body, html {
+    height: 100%;
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: var(--color-fondo);
+}
+
+
+.main-container {
+    width: 90%;
+    max-width: 1200px;
+    height: 90vh;
+    max-height: 700px;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    display: flex;
+    overflow: hidden;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* --- Contenedor de dos columnas --- */
+.login-container {
+    display: flex;
+    width: 100%;
+    height: 100%;
+}
+
+/* --- Columna Izquierda: Formulario --- */
+.login-form-wrapper {
+    flex: 0 0 45%; /* La columna del formulario ocupa el 45% */
+    padding: 40px;
+    border: 3px solid var(--color-primario);
+    border-radius: 10px 0 0 10px;
+    box-sizing: border-box; /* Para que el padding no afecte el ancho */
+    display: flex;
+    flex-direction: column;
+}
+
+/* Encabezado con Logo */
+.login-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.login-header img {
+    width: 50px;
+    height: 50px;
+    margin-right: 15px;
+}
+
+.login-header h1 {
+    font-size: 24px;
+    color: var(--color-texto);
+    margin: 0;
+}
+
+.login-form-wrapper > p {
+    font-size: 18px;
+    color: #555;
+    margin-top: 0;
+}
+
+/* Contenido del Formulario */
+.login-form h2 {
+    font-size: 28px;
+    margin-top: 10px;
+    margin-bottom: 5px;
+}
+
+.login-form p {
+    font-size: 14px;
+    color: #777;
+    margin-bottom: 25px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group input[type="password"] {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid var(--color-borde-input);
+    border-radius: 5px;
+    box-sizing: border-box; /* Importante para el padding */
+    font-size: 14px;
+}
+
+/* Opciones (Checkbox y Olvidó contraseña) */
+.form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    margin-bottom: 25px;
+}
+
+.form-options .checkbox-group {
+    display: flex;
+    align-items: center;
+}
+
+.form-options input[type="checkbox"] {
+    margin-right: 5px;
+}
+
+.form-options a {
+    color: var(--color-primario);
+    text-decoration: none;
+}
+
+/* Botón de Iniciar Sesión */
+.btn-submit {
+    width: 100%;
+    padding: 15px;
+    background-color: var(--color-boton);
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-submit:hover {
+    background-color: var(--color-boton-hover);
+}
+
+/* Link de Registro */
+.register-link {
+    margin-top: 30px;
+    text-align: center;
+    font-size: 14px;
+}
+
+.register-link a {
+    color: var(--color-primario);
+    font-weight: bold;
+    text-decoration: none;
+}
+
+/* Mensajes de Error de Django */
+.form-errors {
+    color: #D8000C;
+    background-color: #FFD2D2;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    font-size: 14px;
+}
+
+
+/* --- Columna Derecha: Decoración --- */
+.login-decoration {
+    flex: 0 0 55%; /* La columna decorativa ocupa el 55% */
+    background-color: #f0f8ff; /* Fondo celeste claro */
+    position: relative;
+    overflow: hidden;
+}
+
+
+.mapa-decorativo-unico {
+    background-image: url('/static/img/mapa-decorativo.png');
+    background-size: contain; 
+    background-repeat: no-repeat;
+    background-position: center;
+    
+    width: 500px;
+    height: 500px;
+    
+    position: absolute;
+    opacity: 0.9;
+    top: 50%;
+    transform: translateY(-50%);    
+    right: 50px;
+}

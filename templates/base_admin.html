@@ -1,0 +1,48 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <link rel="stylesheet" href="{% static 'css/admin_panel.css' %}">
+    
+    <title>{% block title %}Panel de Administración - Comuna UA{% endblock %}</title>
+</head>
+<body>
+    
+    <div class="admin-wrapper">
+
+        <aside class="sidebar">
+
+            <div class="sidebar-header">
+                <img src="{% static 'img/logo.png' %}" alt="Logo Comuna UA">
+                <h1>Comuna UA</h1>
+            </div>
+
+            <nav class="sidebar-nav">
+                <ul>
+                    <li><a href="{% url 'organizacion:direccion_list' %}">Listado de Direcciones</a></li>
+                    <li><a href="{% url 'organizacion:departamento_list' %}">Listado de Departamentos</a></li>
+                    <li><a href="{% url 'solicitud_list' %}">Incidencias</a></li>
+                    <li><a href="{% url 'menu_usuarios' %}">Usuarios</a></li>
+                </ul>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="{% url 'logout' %}">Cerrar sesión</a>
+            </div>
+
+        </aside>
+
+        <main class="main-content">
+            
+            {% block content %}
+                {% endblock %}
+
+        </main>
+
+    </div>
+
+</body>
+</html>

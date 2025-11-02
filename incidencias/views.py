@@ -1,54 +1,45 @@
-<<<<<<< HEAD
+from django.http import HttpResponseBadRequest, JsonResponse
+from django.views.decorators.http import require_POST
+
+# incidencias/views.py
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy, reverse
 from django.views.generic import ListView, DetailView, CreateView, UpdateView 
 from django.db import transaction
 from django.contrib import messages 
-from django.views.decorators.http import require_POST
-from django.http import JsonResponse, HttpResponseBadRequest
+from django.contrib.auth import get_user_model # ✅ NUEVO: Importa la función segura
 
-from .models import Solicitud, Resolucion, Encuesta, Multimedia # <-- ¡IMPORTAR MULTIMEDIA!
+# *** LÍNEA CRÍTICA: Definir el modelo de Usuario de forma segura ***
+User = get_user_model() # ✅ NUEVO: User ahora contiene tu modelo 'usuarios.Usuario'
+# ------------------------------------------------------------------
+
+from .models import Solicitud, Resolucion, Encuesta , Multimedia
 from .forms import SolicitudForm, EncuestaForm, ResolucionForm
-from usuarios.models import Usuario
-
-# --- FUNCIÓN AUXILIAR PARA OBTENER EL MODELO Usuario CUSTOM ---
 def _get_custom_user(request):
-    """Obtiene una instancia de tu modelo Usuario, asumiendo que coincide con el user de Django."""
     if not request.user.is_authenticated:
         return None
     try:
-        return Usuario.objects.get(pk=request.user.pk)
-    except Usuario.DoesNotExist:
-        return Usuario.objects.first() 
+        # Usa la variable segura 'User' en lugar de 'Usuario'
+        return User.objects.get(pk=request.user.pk) 
+    except User.DoesNotExist: # Usa 'User' en lugar de 'Usuario'
+        # Fallback si no se encuentra
+        return User.objects.first() 
     except Exception:
         return None
 
 # --- 1. VISTA DE LISTADO ---
-=======
-from django.shortcuts import render, redirect
-from django.urls import reverse_lazy
-from django.views.generic import ListView, DetailView, CreateView # <--- Importar CreateView
-from .models import Solicitud
-from .forms import SolicitudForm
->>>>>>> 29efc874b2544b2b93fd82a96d1864161b6d4137
 class SolicitudListView(ListView):
     model = Solicitud
     template_name = 'incidencias/solicitud_list.html'
     context_object_name = 'solicitudes'
-<<<<<<< HEAD
     queryset = Solicitud.objects.select_related('cuadrilla').all()
     
 # --- 2. VISTA DE DETALLE ---
-=======
-    # Solo necesitamos cuadrilla para la lista, y es select_related
-    queryset = Solicitud.objects.select_related('cuadrilla').all()
-    
->>>>>>> 29efc874b2544b2b93fd82a96d1864161b6d4137
 class SolicitudDetailView(DetailView):
     model = Solicitud
     template_name = 'incidencias/solicitud_detail.html'
     context_object_name = 'solicitud'
-<<<<<<< HEAD
     # Cargamos Cuadrilla, Encuesta, Resolución y la Multimedia de la Encuesta
     queryset = Solicitud.objects.select_related('cuadrilla').prefetch_related(
         'encuesta_set', 
@@ -189,28 +180,35 @@ class ResolucionCreateView(CreateView):
         return context
 
     def form_valid(self, form):
-        # 1. Obtener la Solicitud
+        # 1. Obtener la Solicitud de la URL
         solicitud = get_object_or_404(Solicitud, pk=self.kwargs['pk'])
         
-        # 2. Guardar la Resolución, sin hacer commit
+        # 2. Guardar la Resolución, sin hacer commit inicial
         resolucion = form.save(commit=False)
         
-        # 3. Asignar la Solicitud y el Usuario Resolutor
+        # 3. Asignar la Solicitud
         resolucion.solicitud = solicitud
-        resolucion.usuario = _get_custom_user(self.request) 
+        
+        # ASIGNACIÓN DEL USUARIO RESOLUTOR (usando el modelo 'User' seguro)
+        try:
+            # Reemplazamos 'Usuario' por 'User'
+            usuario_resolutor = User.objects.first() 
+        except User.DoesNotExist: # Reemplazamos 'Usuario.DoesNotExist' por 'User.DoesNotExist'
+            usuario_resolutor = None
 
-        resolucion.save() # Guardar la Resolución
+        if usuario_resolutor:
+            resolucion.usuario = usuario_resolutor # Asignación a tu campo 'usuario'
 
-        # 4. Cambiar el estado de la Solicitud a FINALIZADA
-        if solicitud.estado != 'FINALIZADA':
-            solicitud.estado = 'FINALIZADA'
-            solicitud.save()
-            messages.success(self.request, 'Resolución registrada y Solicitud marcada como Finalizada.')
-        else:
-            messages.info(self.request, 'Resolución registrada. La Solicitud ya estaba Finalizada.')
+        # 4. Guardar la Resolución
+        resolucion.save() 
 
-        return super().form_valid(form) 
+        # 5. Cambiar el estado de la Solicitud (Lógica estándar al crear una resolución)
+        solicitud.estado = 'FINALIZADA'
+        solicitud.save()
 
+        messages.success(self.request, "La resolución ha sido creada y la Solicitud se ha marcado como FINALIZADA.")
+        
+        return super().form_valid(form)
 
 # --- 6. FUNCIÓN PARA TOGGLE DE ESTADO DE ENCUESTA ---
 @require_POST
@@ -226,22 +224,3 @@ def toggle_encuesta_status(request, pk):
         'status': 'success', 
         'message': f'Acción de estado simulada para la Encuesta de Solicitud #{pk}.'
     })
-=======
-    # Cargamos cuadrilla y pre-cargamos la encuesta para la eficiencia
-    # Nota: El nombre 'encuesta_set' es la relación inversa por defecto
-    queryset = Solicitud.objects.select_related('cuadrilla').prefetch_related('encuesta_set').all()
-
-class SolicitudCreateView(CreateView):
-    model = Solicitud
-    # Nombre de la plantilla para el formulario (debes crear este archivo)
-    template_name = 'incidencias/solicitud_form.html' 
-    # Usaremos todos los campos por simplicidad, puedes cambiarlos a ['campo1', 'campo2', ...]
-    fields = ['cuadrilla', 'estado', 'observaciones', 'tipo_incidencia'] 
-    success_url = reverse_lazy('solicitud_list')
-
-class SolicitudCreateView(CreateView):
-    model = Solicitud
-    form_class = SolicitudForm # Usamos el formulario que creamos
-    template_name = 'incidencias/solicitud_form.html' # El template que crearemos
-    success_url = reverse_lazy('solicitud_list') # Redirigir al listado después de crear
->>>>>>> 29efc874b2544b2b93fd82a96d1864161b6d4137

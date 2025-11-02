@@ -2,11 +2,6 @@
 
 {% block content %}
     <h1>Listado de Solicitudes (Incidencias)</h1>
-<<<<<<< HEAD
-
-=======
-    
->>>>>>> 29efc874b2544b2b93fd82a96d1864161b6d4137
     {% if solicitudes %}
         <table border="1" width="100%">
             <thead>
@@ -16,19 +11,13 @@
                     <th>Estado</th>
                     <th>Cuadrilla Asignada</th>
                     <th>Fecha Creación</th>
-<<<<<<< HEAD
                     <th>Acciones</th> </tr>
-=======
-                    <th>Detalle</th>
-                </tr>
->>>>>>> 29efc874b2544b2b93fd82a96d1864161b6d4137
             </thead>
             <tbody>
                 {% for sol in solicitudes %}
                     <tr>
                         <td>{{ sol.id }}</td>
                         <td>{{ sol.tipo_incidencia }}</td>
-<<<<<<< HEAD
 
                         <td>
                             <strong>{{ sol.estado }}</strong>
@@ -46,12 +35,6 @@
                                 | <a href="{% url 'solicitud_update' pk=sol.pk %}">Editar</a>
                             {% endif %}
                         </td>
-=======
-                        <td><strong>{{ sol.estado }}</strong></td>
-                        <td>{{ sol.cuadrilla.nombre_cuadrilla|default:"Sin asignar" }}</td>
-                        <td>{{ sol.fecha_creacion|date:"Y-m-d H:i" }}</td>
-                        <td><a href="{% url 'solicitud_detail' sol.pk %}">Ver</a></td>
->>>>>>> 29efc874b2544b2b93fd82a96d1864161b6d4137
                     </tr>
                 {% endfor %}
             </tbody>
@@ -59,14 +42,8 @@
     {% else %}
         <p>No hay solicitudes de incidencia registradas.</p>
     {% endif %}
-<<<<<<< HEAD
 
     <p>
        <a href="{% url 'solicitud_create' %}" class="btn btn-primary">Crear Nueva Solicitud</a>
-=======
-    
-    <p>
-       <a href="{% url 'solicitud_create' %}">Crear Nueva Solicitud</a>
->>>>>>> 29efc874b2544b2b93fd82a96d1864161b6d4137
     </p>
 {% endblock content %}

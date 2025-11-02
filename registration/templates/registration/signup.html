@@ -1,19 +1,50 @@
+{% extends "registration/base_registration.html" %}
 {% load static %}
-{% block title %}Registro{% endblock %}
+
+{% block title %}Registro - Comuna UA{% endblock %}
+
 {% block content %}
-    <style>.errorlist{color:red;}label{display:none}</style>
-    <main>
-        <div>
-            <div>
-            <div>
-                <form action="" method="post">
-                    {% csrf_token %}
-                    <h3 class="mb-4">Registro</h3>
-                    {{form.as_p}}
-                    <p><input type="submit" value="Confirmar"></p>
-                </form>
-            </div>
-            </div>
-        </div>
-    </main>
+<div class="login-container">
+
+    <div class="login-form-wrapper">
+
+        <header class="login-header">
+            <img src="{% static 'img/logo.png' %}" alt="Logo Comuna UA">
+            <h1>Comuna UA</h1>
+        </header>
+
+        <p>Crea tu cuenta para acceder al sistema.</p>
+
+        <form class="login-form" method="post">
+            {% csrf_token %}
+
+            <h2>Registro</h2>
+            <p>Completa tus datos para crear una cuenta nueva.</p>
+
+            {% if form.non_field_errors %}
+                <div class="form-errors">
+                    {% for error in form.non_field_errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            {{ form.as_p }}
+
+            <button type="submit" class="btn-submit">Confirmar Registro</button>
+
+            <p class="register-link">
+                ¿Ya tienes una cuenta? 
+                <a href="{% url 'login' %}">Inicia Sesión</a>
+            </p>
+
+        </form>
+    </div>
+
+    <div class="login-decoration">
+        <div class="map-circle map-circle-1"></div>
+        <div class="map-circle map-circle-2"></div>
+    </div>
+
+</div>
 {% endblock %}

@@ -19,12 +19,9 @@ from django.urls import path, include # pyright: ignore[reportMissingModuleSourc
 from core.urls import core_urlpatterns
 from usuarios.urls import usuarios_urlpatterns
 from incidencias.urls import incidencias_urlpatterns
-<<<<<<< HEAD
 from django.conf import settings
 from django.conf.urls.static import static
-=======
 
->>>>>>> 29efc874b2544b2b93fd82a96d1864161b6d4137
 
 urlpatterns = [
     path('organizacion/', include('organizacion.urls')),
@@ -37,3 +34,11 @@ urlpatterns = [
     
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+if settings.DEBUG:
+    # 1. Archivos Estáticos (CSS, JS, imágenes de diseño, etc.)
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    
+    # 2. Archivos Media (Imágenes subidas por el usuario, como la foto de fondo)
+    # ¡Asegúrate de que STATIC_URL, MEDIA_ROOT y MEDIA_URL estén definidos en settings.py!
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
