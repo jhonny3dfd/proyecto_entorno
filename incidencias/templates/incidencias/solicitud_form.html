@@ -1,0 +1,42 @@
+{% extends "core/main_admin.html" %}
+
+{% block content %}
+    <h1>{% if form.instance.pk %}Editar{% else %}Crear Nueva{% endif %} Incidencia y Encuesta 📝</h1>
+    
+    <form method="post" enctype="multipart/form-data"> {% csrf_token %}
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h2>1. Detalles Generales de la Solicitud</h2>
+                <p class="text-muted">Información administrativa (puede ser para uso interno o delegación).</p>
+            </div>
+            <div class="card-body">
+                {{ form.as_p }}
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h2>2. Información Específica de la Incidencia (Encuesta)</h2>
+                <p class="text-muted">Datos de campo reportados por el Territorial.</p>
+            </div>
+            <div class="card-body">
+                {{ encuesta_form.as_p }}
+                
+                {% if multimedia_existente %}
+                    <hr>
+                    <p><strong>Archivos existentes:</strong></p>
+                    <ul>
+                    {% for media in multimedia_existente %}
+                        <li>{{ media.tipo_multimedia }}: <a href="{{ media.ruta.url }}" target="_blank">{{ media.ruta.name }}</a></li>
+                    {% endfor %}
+                    </ul>
+                {% endif %}
+                
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">{% if form.instance.pk %}Actualizar{% else %}Crear{% endif %} Solicitud y Detalles</button>
+        <a href="{% url 'solicitud_list' %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+{% endblock %}

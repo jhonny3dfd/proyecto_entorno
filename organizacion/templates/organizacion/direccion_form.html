@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>
+        {% if form.instance.pk %}
+            Editar Dirección: {{ form.instance.nombre_direccion }}
+        {% else %}
+            Crear Nueva Dirección
+        {% endif %}
+    </h2>
+
+    <form method="post">
+        {% csrf_token %}
+        
+        {# Renderiza el formulario completo con sus campos y widgets #}
+        {{ form.as_p }} 
+
+        <button type="submit">Guardar Dirección</button>
+        
+        {# Enlace para cancelar o volver #}
+        <a href="{% url 'organizacion:direccion_list' %}">Cancelar y Volver al Listado</a>
+    </form>
+{% endblock content %}

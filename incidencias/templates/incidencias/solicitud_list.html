@@ -1,0 +1,50 @@
+{% extends "core/main_admin.html" %}
+
+{% block content %}
+    <h1>Listado de Solicitudes (Incidencias)</h1>
+
+    {% if solicitudes %}
+        <table border="1" width="100%">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Tipo de Incidencia</th>
+                    <th>Estado</th>
+                    <th>Cuadrilla Asignada</th>
+                    <th>Fecha Creación</th>
+                    <th>Acciones</th> </tr>
+            </thead>
+            <tbody>
+                {% for sol in solicitudes %}
+                    <tr>
+                        <td>{{ sol.id }}</td>
+                        <td>{{ sol.tipo_incidencia }}</td>
+
+                        <td>
+                            <strong>{{ sol.estado }}</strong>
+                            <span style="color: red; font-size: 0.8em;">({{ sol.estado }})</span>
+                        </td>
+
+                        <td>{{ sol.cuadrilla.nombre_cuadrilla|default:"Sin asignar" }}</td>
+                        <td>{{ sol.fecha_creacion|date:"Y-m-d H:i" }}</td>
+
+                        <td>
+                            <a href="{% url 'solicitud_detail' sol.pk %}">Ver</a>
+
+                            {% comment %} Condición para mostrar EDITAR {% endcomment %}
+                            {% if sol.estado == 'RECHAZADA' or sol.estado == 'en proceso' or sol.estado == 'terminado' %}
+                                | <a href="{% url 'solicitud_update' pk=sol.pk %}">Editar</a>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>No hay solicitudes de incidencia registradas.</p>
+    {% endif %}
+
+    <p>
+       <a href="{% url 'solicitud_create' %}" class="btn btn-primary">Crear Nueva Solicitud</a>
+    </p>
+{% endblock content %}

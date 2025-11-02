@@ -1,0 +1,140 @@
+{% extends "core/main_admin.html" %}
+
+{% block content %}
+
+    <h2 class="mb-4">Solicitud #{{ solicitud.id }}: {{ solicitud.tipo_incidencia }}</h2>
+    
+    <div class="card mb-4">
+        <div class="card-header bg-light">
+            Opciones de Gestión
+        </div>
+        <div class="card-body d-flex align-items-center">
+            
+            <p class="me-3 mb-0"><strong>Estado:</strong> <span class="badge bg-primary">{{ solicitud.estado }}</span></p>
+
+            {% if solicitud.estado == 'CREADA' or solicitud.estado == 'ABIERTA' %}
+                <a href="" class="btn btn-warning btn-sm me-2">
+                    Derivar a Cuadrilla 📬
+                </a>
+            {% elif solicitud.estado != 'FINALIZADA' %}
+                <button class="btn btn-outline-warning btn-sm me-2" disabled>
+                    Solicitud Derivada
+                </button>
+            {% endif %}
+
+            {% if solicitud.estado == 'DERIVADA' %}
+                <a href="{% url 'solicitud_resolver' pk=solicitud.pk %}" class="btn btn-success btn-sm me-2">
+                    Registrar Resolución ✅
+                </a>
+            {% elif solicitud.estado == 'FINALIZADA' %}
+                <button class="btn btn-outline-secondary btn-sm me-2" disabled>
+                    Incidencia Finalizada
+                </button>
+            {% endif %}
+            
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h4>1. Detalles de la Solicitud (Administrativo)</h4>
+        </div>
+        <div class="card-body">
+            <p>
+                <strong>Tipo de Incidencia:</strong> {{ solicitud.tipo_incidencia }}<br>
+                <strong>Cuadrilla Asignada:</strong> {{ solicitud.cuadrilla.nombre_cuadrilla|default:"(Sin asignar)" }}<br>
+                <strong>Fecha de Creación:</strong> {{ solicitud.fecha_creacion|date:"d M Y H:i" }}
+            </p>
+            <p>
+                <strong>Notas Administrativas:</strong><br>
+                {{ solicitud.observaciones|linebreaksbr|default:"(No hay observaciones)" }}
+            </p>
+        </div>
+    </div>
+
+    {# Usamos el primer objeto Encuesta de la relación inversa 'encuesta_set' #}
+    {% with encuesta=solicitud.encuesta_set.first %}
+        {% if encuesta %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h4>2. Detalles de la Incidencia (Encuesta)</h4>
+                </div>
+                <div class="card-body">
+                    <p>
+                        <strong>Título/Asunto:</strong> {{ encuesta.titulo }}<br>
+                        <strong>Reportado por:</strong> {{ encuesta.usuario.nombre }} {{ encuesta.usuario.apellido }} (Territorial)<br>
+                        <strong>Prioridad:</strong> {{ encuesta.prioridad }}<br>
+                        <strong>Ubicación:</strong> {{ encuesta.ubicacion }}
+                    </p>
+                    <p>
+                        <strong>Descripción:</strong><br>
+                        {{ encuesta.descripcion|linebreaksbr }}
+                    </p>
+                    <p>
+                        <strong>Contacto Vecino:</strong> {{ encuesta.nombre_vecino }} | Tel: {{ encuesta.telefono_vecino }} | Correo: {{ encuesta.correo_vecino|default:"(Sin correo)" }}
+                    </p>
+
+                    {% comment %} NUEVA SECCIÓN DE MULTIMEDIA {% endcomment %}
+                    {% with multimedia_list=encuesta.multimedia_set.all %}
+                        {% if multimedia_list %}
+                            <hr>
+                            <h5>Archivos Adjuntos (Evidencia)</h5>
+                            <div class="row">
+                                {% for media in multimedia_list %}
+                                    <div class="col-md-4 mb-3">
+                                        <a href="{{ media.ruta.url }}" target="_blank" class="d-block border p-2 text-center text-decoration-none">
+                                            {% if 'image' in media.tipo_multimedia %}
+                                                <img src="{{ media.ruta.url }}" class="img-fluid rounded" alt="Evidencia de la Incidencia" style="max-height: 200px; object-fit: cover;">
+                                                <small class="d-block mt-1">Ver Imagen</small>
+                                            {% elif 'video' in media.tipo_multimedia %}
+                                                <p class="mb-0">🎥 Video Adjunto</p>
+                                                <small class="d-block">Clic para ver</small>
+                                            {% else %}
+                                                <p class="mb-0">📄 Archivo: {{ media.tipo_multimedia }}</p>
+                                                <small class="d-block">Clic para descargar</small>
+                                            {% endif %}
+                                        </a>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <p class="text-muted">No se adjuntaron archivos multimedia.</p>
+                        {% endif %}
+                    {% endwith %}
+                    
+                    {% comment %} Botón de edición solo si la solicitud NO está finalizada {% endcomment %}
+                    {% if solicitud.estado != 'FINALIZADA' %}
+                        <p class="text-end">
+                            <a href="{% url 'solicitud_update' pk=solicitud.pk %}" class="btn btn-sm btn-outline-primary">Editar Incidencia (Detalle y Archivos)</a>
+                        </p>
+                    {% endif %}
+
+                </div>
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    {# Usamos el primer objeto Resolucion de la relación inversa 'resolucion_set' #}
+    {% with resolucion=solicitud.resolucion_set.first %}
+        {% if resolucion %}
+            <div class="card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h4>✅ Resolución del Problema (Cuadrilla)</h4>
+                </div>
+                <div class="card-body">
+                    <p>
+                        <strong>Registrada por:</strong> {{ resolucion.usuario.nombre }} {{ resolucion.usuario.apellido }}<br>
+                        <strong>Cuadrilla que actuó:</strong> {{ resolucion.cuadrilla.nombre_cuadrilla|default:"(No especificada)" }}<br>
+                        <strong>Fecha de Resolución:</strong> {{ resolucion.fecha_resolucion|date:"d M Y H:i" }}
+                    </p>
+                    <p>
+                        <strong>Explicación del Trabajo:</strong><br>
+                        {{ resolucion.descripcion|linebreaksbr }}
+                    </p>
+                </div>
+            </div>
+        {% endif %}
+    {% endwith %}
+    
+    <p class="text-center mt-5"><a href="{% url 'solicitud_list' %}" class="btn btn-secondary">← Volver al listado de Solicitudes</a></p>
+{% endblock content %}

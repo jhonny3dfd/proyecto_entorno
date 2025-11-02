@@ -1,0 +1,23 @@
+{% block title %}Resolver Solicitud #{{ solicitud.pk }}{% endblock %}
+
+{% block content %}
+    <h1>Reporte de Resolución para Incidencia #{{ solicitud.pk }}</h1>
+    <p class="lead">Incidencia: <strong>{{ solicitud.encuesta.titulo|default:'(Título no disponible)' }}</strong></p>
+    <hr>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">
+                <h2>Detalles de la Solución</h2>
+            </div>
+            <div class="card-body">
+                {{ form.as_p }}
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-success btn-lg">Finalizar y Registrar Resolución</button>
+        <a href="{% url 'solicitud_detail' pk=solicitud.pk %}" class="btn btn-secondary">Volver al Detalle</a>
+    </form>
+{% endblock %}

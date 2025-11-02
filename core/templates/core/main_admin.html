@@ -1,1 +1,17 @@
-se ha autentificado
+{% extends "base.html" %} 
+
+{% block navbar %}
+<nav>
+    <a href="{% url 'organizacion:direccion_list' %}">Listado de Direcciones</a>
+    |
+    <a href="{% url 'organizacion:departamento_list' %}">Listado de Departamentos</a>
+    |
+    <a href="{% url 'solicitud_list' %}">Incidencias</a>
+    <a href="{% url 'menu_usuarios' %}">Usuarios</a>
+</nav>
+{% endblock navbar %}
+
+{% block content %}
+    <h1>Bienvenido al Panel de Administración</h1>
+    {# Opcional: Aquí puedes agregar enlaces o estadísticas de alto nivel #}
+{% endblock content %}

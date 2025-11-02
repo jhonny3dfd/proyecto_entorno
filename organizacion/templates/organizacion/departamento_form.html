@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>
+        {% if form.instance.pk %}
+            Editar Departamento: {{ form.instance.departamento }}
+        {% else %}
+            Crear Nuevo Departamento
+        {% endif %}
+    </h2>
+
+    <form method="post">
+        {% csrf_token %}
+        
+        {# Esto renderiza todos los campos, incluyendo la Dirección (ForeignKey) como un select #}
+        {{ form.as_p }} 
+
+        <button type="submit">Guardar Departamento</button>
+        
+        <a href="{% url 'organizacion:departamento_list' %}">Cancelar y Volver al Listado</a>
+    </form>
+{% endblock content %}

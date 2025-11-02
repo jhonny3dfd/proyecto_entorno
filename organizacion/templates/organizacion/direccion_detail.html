@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Detalle de Dirección: {{ direccion.nombre_direccion }}</h2>
+    
+    <hr>
+    
+    <h3>Departamentos en esta Dirección:</h3>
+    
+    <p>
+        {# ¡NUEVO BOTÓN! El 'direccion_id' en la URL ayuda a la vista a preseleccionar la dirección #}
+        <a href="{% url 'organizacion:departamento_create' %}?direccion_id={{ direccion.pk }}">
+            + Crear Nuevo Departamento en esta Dirección
+        </a>
+    </p>
+
+    {% if direccion.departamento_set.all %}
+        <ul>
+            {% for depto in direccion.departamento_set.all %}
+                <li>
+                    <a href="{% url 'organizacion:departamento_detail' depto.pk %}">
+                        {{ depto.departamento }}
+                    </a> 
+                    (Encargado: {{ depto.nombre_encargado }})
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Esta Dirección no tiene departamentos registrados.</p>
+    {% endif %}
+
+    <hr>
+    
+    <p><a href="{% url 'organizacion:direccion_list' %}">Volver al listado de Direcciones</a></p>
+{% endblock content %}

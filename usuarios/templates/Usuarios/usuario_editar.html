@@ -1,0 +1,16 @@
+<h4>Edición de Usuario</h4>
+<hr>
+
+<form method="POST">
+    
+    {% csrf_token %}
+
+    {{ form.as_p }}
+
+    <button type="submit">Guardar Cambios</button>
+    
+</form>
+
+<hr>
+
+<a href="{% url 'main_admin' %}">Cancelar y Volver</a>

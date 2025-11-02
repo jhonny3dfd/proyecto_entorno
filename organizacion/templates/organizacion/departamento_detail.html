@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <h2>Detalle de Departamento: {{ departamento.departamento }}</h2>
+    
+    <p><strong>Nombre del Departamento:</strong> {{ departamento.departamento }}</p>
+    <p><strong>Dirección a la que pertenece:</strong> 
+        <a href="{% url 'organizacion:direccion_detail' departamento.direccion.pk %}">
+            {{ departamento.direccion.nombre_direccion }}
+        </a>
+    </p>
+    <p><strong>Encargado:</strong> {{ departamento.nombre_encargado }}</p>
+    <p><strong>Correo:</strong> {{ departamento.correo_encargado }}</p>
+    <p><strong>Estado:</strong> 
+        {% if departamento.activo %}
+            <span style="color: green;">Activo</span>
+        {% else %}
+            <span style="color: red;">Bloqueado</span>
+        {% endif %}
+    </p>
+    
+    <hr>
+    
+    <h3>Cuadrillas en este Departamento:</h3>
+    
+    <p>
+        {# NUEVO ENLACE: Botón para crear una cuadrilla asociada a este departamento #}
+        <a href="{% url 'organizacion:cuadrilla_create' departamento.pk %}">Crear Nueva Cuadrilla</a>
+    </p>
+    
+    {% if departamento.cuadrilla_set.all %}
+        <ul>
+            {% for cuadrilla in departamento.cuadrilla_set.all %}
+                <li>
+                    {# Enlazar al detalle o edición de la cuadrilla (lo crearemos en el punto 3) #}
+                    <a href="{% url 'organizacion:cuadrilla_detail' cuadrilla.pk %}">
+                        {{ cuadrilla.nombre_cuadrilla }}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Este Departamento no tiene cuadrillas asignadas.</p>
+    {% endif %}
+
+    <hr>
+    
+    <p>
+        <a href="{% url 'organizacion:direccion_detail' departamento.direccion.pk %}">Volver a la Dirección {{ departamento.direccion.nombre_direccion }}</a>
+        | 
+        <a href="{% url 'organizacion:departamento_list' %}">Volver al listado de Departamentos</a>
+    </p>
+
+{% endblock content %}
