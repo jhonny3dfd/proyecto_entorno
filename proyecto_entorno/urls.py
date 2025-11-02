@@ -19,8 +19,12 @@ from django.urls import path, include # pyright: ignore[reportMissingModuleSourc
 from core.urls import core_urlpatterns
 from usuarios.urls import usuarios_urlpatterns
 from incidencias.urls import incidencias_urlpatterns
+<<<<<<< HEAD
 from django.conf import settings
 from django.conf.urls.static import static
+=======
+
+>>>>>>> 29efc874b2544b2b93fd82a96d1864161b6d4137
 
 urlpatterns = [
     path('organizacion/', include('organizacion.urls')),

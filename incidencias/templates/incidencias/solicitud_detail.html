@@ -1,6 +1,7 @@
 {% extends "core/main_admin.html" %}
 
 {% block content %}
+<<<<<<< HEAD
 
     <h2 class="mb-4">Solicitud #{{ solicitud.id }}: {{ solicitud.tipo_incidencia }}</h2>
     
@@ -137,4 +138,38 @@
     {% endwith %}
     
     <p class="text-center mt-5"><a href="{% url 'solicitud_list' %}" class="btn btn-secondary">← Volver al listado de Solicitudes</a></p>
+=======
+    <h2>Solicitud #{{ solicitud.id }}: {{ solicitud.tipo_incidencia }}</h2>
+    
+    <p><strong>Estado Actual:</strong> <span style="font-weight: bold;">{{ solicitud.estado }}</span></p>
+    <p><strong>Cuadrilla Asignada:</strong> {{ solicitud.cuadrilla.nombre_cuadrilla|default:"Sin asignar" }}</p>
+    <p><strong>Observaciones:</strong> {{ solicitud.observaciones|default:"Sin observaciones" }}</p>
+    
+    <hr>
+    
+    {% with detalles=solicitud.encuesta_set.first %}
+        {% if detalles %}
+            <h3>Detalles de la Encuesta (Datos del Vecino/Incidente)</h3>
+            <p><strong>Título:</strong> {{ detalles.titulo }} (Prioridad: **{{ detalles.prioridad }}**)</p>
+            <p><strong>Ubicación:</strong> {{ detalles.ubicacion }}</p>
+            <p><strong>Descripción:</strong> {{ detalles.descripcion|linebreaksbr }}</p>
+            
+            <h4>Contacto del Vecino</h4>
+            <p>
+                <strong>Nombre:</strong> {{ detalles.nombre_vecino }}<br>
+                <strong>Teléfono:</strong> {{ detalles.telefono_vecino }}<br>
+                <strong>Correo:</strong> {{ detalles.correo_vecino|default:"N/A" }}
+            </p>
+            
+            {% comment %} Si el usuario está relacionado en Encuesta, puedes usar detalles.usuario.username {% endcomment %}
+            
+        {% else %}
+            <p>⚠️ Advertencia: No se encontró el detalle de Encuesta para esta Solicitud. <a href="/admin/incidencias/encuesta/add/?solicitud={{ solicitud.id }}">Crear Encuesta</a></p>
+        {% endif %}
+    {% endwith %}
+
+    <hr>
+    
+    <p><a href="{% url 'solicitud_list' %}">Volver al listado de Solicitudes</a></p>
+>>>>>>> 29efc874b2544b2b93fd82a96d1864161b6d4137
 {% endblock content %}
