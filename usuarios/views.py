@@ -98,6 +98,6 @@ def usuario_eliminar(request, id_usuario):
 @login_required
 def usuario_bloquear(request, id_usuario):
     usuario = get_object_or_404(Usuario, pk=id_usuario)
-    usuario.esta_activo = not usuario.esta_activo #si esta activo, lo bloquea. Si esta bloqueado, lo activa nuevamente
+    usuario.esta_activo = not usuario.esta_activo 
     usuario.save()
     return redirect('lista_usuarios')

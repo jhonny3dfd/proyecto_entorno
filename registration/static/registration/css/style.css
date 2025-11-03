@@ -1976,7 +1976,7 @@ textarea.form-control {
 }
 
 .form-group {
-  margin-bottom: 1rem;
+  margin-bottom: 25px !important;
 }
 
 .form-text {
@@ -2266,7 +2266,7 @@ textarea.form-control {
     flex: 0 0 auto;
     flex-flow: row wrap;
     align-items: center;
-    margin-bottom: 0;
+    margin-bottom: 25px;
   }
   .form-inline .form-control {
     display: inline-block;

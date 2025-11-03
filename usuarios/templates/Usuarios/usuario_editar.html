@@ -1,16 +1,69 @@
-<h4>Edición de Usuario</h4>
-<hr>
-
-<form method="POST">
+{% extends "base_admin.html" %} 
+{% block content %}
     
-    {% csrf_token %}
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h4 class="m-0 font-weight-bold text-warning">Edición de Usuario</h4>
+        </div>
+        <div class="card-body">
 
-    {{ form.as_p }}
-
-    <button type="submit">Guardar Cambios</button>
-    
-</form>
-
-<hr>
-
-<a href="{% url 'main_admin' %}">Cancelar y Volver</a>
+            <form method="POST">
+                {% csrf_token %}
+                
+                {# Renderizado manual de campos para aplicar estilos y espaciado #}
+                
+                {# Campo: Rol #}
+                <div style="margin-bottom: 20px;">
+                    {{ form.rol.label_tag }}
+                    {{ form.rol }}
+                    {% if form.rol.errors %}<div style="color: red;">{{ form.rol.errors }}</div>{% endif %}
+                </div>
+                
+                {# Campo: Correo #}
+                <div style="margin-bottom: 20px;">
+                    {{ form.correo.label_tag }}
+                    {{ form.correo }}
+                    {% if form.correo.errors %}<div style="color: red;">{{ form.correo.errors }}</div>{% endif %}
+                </div>
+                
+                {# Campo: Teléfono #}
+                <div style="margin-bottom: 20px;">
+                    {{ form.telefono.label_tag }}
+                    {{ form.telefono }}
+                    {% if form.telefono.errors %}<div style="color: red;">{{ form.telefono.errors }}</div>{% endif %}
+                </div>
+                
+                {# Campo: Contraseña (NOTA: Usar form.contraseña.label_tag si quieres la etiqueta) #}
+                <div style="margin-bottom: 20px;">
+                    {{ form.contraseña.label_tag }}
+                    {{ form.contraseña }}
+                    {% if form.contraseña.errors %}<div style="color: red;">{{ form.contraseña.errors }}</div>{% endif %}
+                </div>
+                
+                {# Script para asegurar el estilo form-control a los campos generados por el form.py #}
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        // Selecciona los campos de entrada, selects y áreas de texto dentro del formulario
+                        const formContainer = document.querySelector('.card-body form');
+                        if (formContainer) {
+                            const fields = formContainer.querySelectorAll('input, select, textarea');
+                            fields.forEach(field => {
+                                field.classList.add('form-control');
+                            });
+                        }
+                    });
+                </script>
+                
+                <button type="submit" class="btn btn-warning mt-3">
+                    Guardar Cambios
+                </button>
+                
+                <a href="{% url 'lista_usuarios' %}" class="btn btn-secondary mt-3 ml-2">
+                    Cancelar y Volver
+                </a>
+                
+            </form>
+            
+        </div>
+    </div>
+{% endblock content %}

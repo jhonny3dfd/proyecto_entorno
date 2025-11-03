@@ -3,11 +3,13 @@
 {% block navbar %}
 <nav>
     <a href="{% url 'organizacion:direccion_list' %}">Listado de Direcciones</a>
-    |
+    &nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp;
     <a href="{% url 'organizacion:departamento_list' %}">Listado de Departamentos</a>
-    |
+    &nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp;
     <a href="{% url 'solicitud_list' %}">Incidencias</a>
+    &nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp;
     <a href="{% url 'menu_usuarios' %}">Usuarios</a>
+    &nbsp;&nbsp;&nbsp; | &nbsp;&nbsp;&nbsp;
 </nav>
 {% endblock navbar %}
 

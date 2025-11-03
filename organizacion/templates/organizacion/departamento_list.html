@@ -1,48 +1,59 @@
-{% extends "base.html" %} 
-
+{% extends "base_admin.html" %} 
 {% block content %}
     <h2>Listado de Departamentos</h2>
     
-    <p>
-        {# Link de Creación requerido #}
-        <a href="{% url 'organizacion:departamento_create' %}">Crear Nuevo Departamento</a>
-    </p>
+    <div class="actions-header" style="display: flex; gap: 10px;">
+        {# 1. BOTÓN PRINCIPAL DE CREACIÓN #}
+        <a href="{% url 'organizacion:departamento_create' %}" class="btn btn-primary">
+            Crear Nuevo Departamento
+        </a> 
+        
+        {# 2. BOTÓN SECUNDARIO PARA VOLVER #}
+        <a href="{% url 'main_admin' %}" class="btn btn-secondary">
+            Volver al Menú Principal
+        </a> 
+    </div>
+
+    <hr>
 
     {% if departamentos %}
         <table border="1" width="100%">
             <thead>
                 <tr>
-                    <th>#</th>
+                    <th>Nro</th>
                     <th>Nombre Departamento</th>
+                    <th>Dirección Asignada</th>
                     <th>Encargado</th>
-                    <th>Dirección</th>
                     <th>Estado</th>
-                    <th>Acciones (Ver, Editar, Bloquear)</th>
+                    <th>Acciones</th>
                 </tr>
             </thead>
             <tbody>
-                {% for depto in departamentos %}
+                {% for depto in departamentos %} 
                 <tr>
                     <td>{{ forloop.counter }}</td>
-                    <td>{{ depto.nombre_departamento }}</td> {# Asume el cambio a nombre_departamento en models.py #}
-                    <td>{{ depto.nombre_encargado }}</td>
+                    <td>{{ depto.departamento }}</td>
                     <td>{{ depto.direccion.nombre_direccion }}</td>
+                    <td>{{ depto.nombre_encargado }}</td>
                     <td>
-                        {# Mostrar el estado Activo/Bloqueado #}
+                        {# Estado: Se usa 'badge' para un estilo moderno #}
                         {% if depto.activo %}
-                            <span style="color: green;">Activo</span>
+                            <span class="badge bg-success">Activo</span>
                         {% else %}
-                            <span style="color: red;">Bloqueado</span>
+                            <span class="badge bg-danger">Inactivo/Bloqueado</span>
                         {% endif %}
                     </td>
                     <td>
-                        {# Acciones requeridas: Ver, Editar, Activar/bloquear #}
-                        <a href="{% url 'organizacion:departamento_detail' depto.pk %}">Ver</a> |
-                        <a href="{% url 'organizacion:departamento_update' depto.pk %}">Editar</a> |
+                        {# 3. BOTONES DE ACCIÓN EN TABLA (usando btn-sm) #}
+                        <a href="{% url 'organizacion:departamento_detail' depto.pk %}" class="btn btn-sm btn-info">Ver</a> 
+
+                        <a href="{% url 'organizacion:departamento_update' depto.pk %}" class="btn btn-sm btn-warning">Editar</a> 
+
+                        {# 4. BOTÓN CONDICIONAL DE ACTIVAR/BLOQUEAR #}
                         {% if depto.activo %}
-                            <a href="{% url 'organizacion:departamento_update' depto.pk %}?action=bloquear">Bloquear</a>
+                            <a href="{% url 'organizacion:departamento_update' depto.pk %}?action=bloquear" class="btn btn-sm btn-danger">Bloquear</a>
                         {% else %}
-                            <a href="{% url 'organizacion:departamento_update' depto.pk %}?action=activar">Activar</a>
+                            <a href="{% url 'organizacion:departamento_update' depto.pk %}?action=activar" class="btn btn-sm btn-success">Activar</a>
                         {% endif %}
                     </td>
                 </tr>
@@ -52,5 +63,4 @@
     {% else %}
         <p>No hay departamentos registrados.</p>
     {% endif %}
-
 {% endblock content %}

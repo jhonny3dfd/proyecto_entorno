@@ -2,14 +2,15 @@
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy 
 from .models import Direccion, Departamento, Cuadrilla
-from django.shortcuts import redirect # Importar redirect
+from django.shortcuts import redirect 
+from django.urls import reverse
 
 
-# --- Vistas de Dirección (CRUD) ---
+# --- Vistas de Direccion (CRUD) ---
 
 class DireccionListView(ListView):
     """Muestra un listado de todas las Direcciones."""
-    model = Direccion # <--- DEBE SER EL MODELO CORRECTO
+    model = Direccion 
     template_name = 'organizacion/direccion_list.html'
     context_object_name = 'direcciones'
     
@@ -30,16 +31,14 @@ class DireccionUpdateView(UpdateView):
     template_name = 'organizacion/direccion_form.html'
     success_url = reverse_lazy('organizacion:direccion_list')
 
-    # *** Lógica para manejar Bloquear/Activar ***
     def post(self, request, *args, **kwargs):
-        # 1. Obtener el objeto actual (Dirección)
+        # 1. Obtener el objeto actual (Direccion)
         self.object = self.get_object() 
         
         # 2. Verificar si viene la acción 'action' en la URL (Query Parameter)
         action = request.GET.get('action')
         
         if action in ['bloquear', 'activar']:
-            # Lógica de bloqueo/activación
             if action == 'bloquear':
                 self.object.activa = False
             elif action == 'activar':
@@ -47,14 +46,12 @@ class DireccionUpdateView(UpdateView):
                 
             self.object.save()
             
-            # Redirigir al listado
             return redirect(self.get_success_url())
             
-        # 3. Si no es una acción especial, ejecutar el POST normal (edición de formulario)
+        # 3. Si no es una accion especial, ejecutar el POST normal (edicion de formulario)
         return super().post(request, *args, **kwargs)
 
 class DireccionDeleteView(DeleteView):
-    # Usaremos DeleteView para confirmar la "desactivación"
     model = Direccion
     template_name = 'organizacion/direccion_confirm_delete.html' 
     success_url = reverse_lazy('organizacion:direccion_list')
@@ -74,18 +71,15 @@ class DepartamentoDetailView(DetailView):
 
 class DepartamentoCreateView(CreateView):
     model = Departamento
-    # Incluimos 'direccion' para que aparezca en el formulario
     fields = ['direccion', 'nombre_encargado', 'correo_encargado', 'departamento', 'activo'] 
     template_name = 'organizacion/departamento_form.html' 
     success_url = reverse_lazy('organizacion:departamento_list')
     
-    # Nuevo: Permite preseleccionar la Dirección si viene en la URL
     def get_initial(self):
         initial = super().get_initial()
         direccion_id = self.request.GET.get('direccion_id')
         if direccion_id:
             try:
-                # Esto selecciona la Dirección en el campo 'direccion' del formulario
                 initial['direccion'] = Direccion.objects.get(pk=direccion_id)
             except Direccion.DoesNotExist:
                 pass
@@ -97,7 +91,6 @@ class DepartamentoUpdateView(UpdateView):
     template_name = 'organizacion/departamento_form.html'
     success_url = reverse_lazy('organizacion:departamento_list')
 
-    # Lógica para manejar Bloquear/Activar
     def post(self, request, *args, **kwargs):
         self.object = self.get_object() 
         action = request.GET.get('action')
@@ -117,3 +110,44 @@ class DepartamentoDeleteView(DeleteView):
     model = Departamento
     template_name = 'organizacion/departamento_confirm_delete.html' 
     success_url = reverse_lazy('organizacion:departamento_list')
+
+
+class CuadrillaListView(ListView):
+    model = Cuadrilla
+    template_name = 'organizacion/cuadrilla_list.html' 
+    context_object_name = 'cuadrillas'
+
+class CuadrillaDetailView(DetailView):
+    model = Cuadrilla
+    template_name = 'organizacion/cuadrilla_detail.html' 
+    context_object_name = 'cuadrilla'
+
+class CuadrillaCreateView(CreateView):
+    model = Cuadrilla
+    fields = ['departamento', 'nombre_cuadrilla'] 
+    template_name = 'organizacion/cuadrilla_form.html' 
+
+    # 1. Obtiene el 'departamento_pk' de la URL y lo usa como valor inicial del campo 'departamento'
+    def get_initial(self):
+        initial = super().get_initial()
+        departamento_pk = self.kwargs.get('departamento_pk')
+        if departamento_pk:
+            initial['departamento'] = departamento_pk
+        return initial
+
+    # 2. Redirecciona al detalle del Departamento (no al listado de cuadrillas)
+    def get_success_url(self):
+        departamento_pk = self.kwargs.get('departamento_pk')
+        if departamento_pk:
+            return reverse('organizacion:departamento_detail', kwargs={'pk': departamento_pk})
+        return reverse_lazy('organizacion:departamento_list') 
+class CuadrillaUpdateView(UpdateView):
+    model = Cuadrilla
+    fields = ['departamento', 'nombre_cuadrilla'] 
+    template_name = 'organizacion/cuadrilla_form.html'
+    success_url = reverse_lazy('organizacion:cuadrilla_list')
+
+class CuadrillaDeleteView(DeleteView):
+    model = Cuadrilla
+    template_name = 'organizacion/cuadrilla_confirm_delete.html' 
+    success_url = reverse_lazy('organizacion:cuadrilla_list')

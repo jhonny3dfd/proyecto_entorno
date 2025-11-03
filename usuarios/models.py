@@ -1,6 +1,5 @@
 from django.db import models
 
-# NOTA: En un proyecto real, considera usar django.contrib.auth.models.User o AbstractUser.
 
 class Rol(models.Model):
     nombre_rol = models.CharField(max_length=100)
@@ -14,7 +13,7 @@ class Usuario(models.Model):
     apellido = models.CharField(max_length=100)
     correo = models.EmailField(unique=True)
     telefono = models.CharField(max_length=20)
-    contraseña = models.CharField(max_length=128) # Almacenará el hash de la contraseña
+    contraseña = models.CharField(max_length=128) 
     esta_activo = models.BooleanField(default=True)
 
     def __str__(self):

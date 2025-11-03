@@ -5,20 +5,17 @@ from django.urls import reverse
 ESTADO_CHOICES = [
     ('CREADA', 'Creada'),
     ('ABIERTA', 'Abierta'),
-    ('DERIVADA', 'Derivada'),
     ('EN PROCESO', 'En Proceso'),
     ('FINALIZADA', 'Finalizada'),
     ('RECHAZADA', 'Rechazada'),
 ]
+PRIORIDAD_CHOICES = [
+    ('ALTA', 'Alta'),
+    ('MEDIA', 'Media'),
+    ('BAJA', 'Baja'),
+]
 
-class Solicitud(models.Model):
-    # Asumo que Cuadrilla está en 'organizacion'
-    cuadrilla = models.ForeignKey('organizacion.Cuadrilla', on_delete=models.SET_NULL, null=True, blank=True)
-    estado = models.CharField(
-        max_length=50,
-        choices=ESTADO_CHOICES,
-        default='CREADA' # El estado inicial es 'CREADA'
-    )
+
 from django.db import models
 from django.utils import timezone
 
@@ -42,12 +39,12 @@ class Encuesta(models.Model):
     titulo = models.CharField(max_length=255)
     descripcion = models.TextField(blank=True)
     ubicacion = models.CharField(max_length=255)
-    prioridad = models.CharField(max_length=50)
+    prioridad = models.CharField(max_length=50, choices=PRIORIDAD_CHOICES)
     nombre_vecino = models.CharField(max_length=200)
     telefono_vecino = models.CharField(max_length=20)
     correo_vecino = models.EmailField(blank=True)
-    activa = models.BooleanField(default=True) # Nuevo campo
-    fecha_actualizacion = models.DateTimeField(auto_now=True) # Nuevo campo
+    activa = models.BooleanField(default=True)
+    fecha_actualizacion = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"Detalles para Solicitud #{self.solicitud.id}"

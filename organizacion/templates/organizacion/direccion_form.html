@@ -1,23 +1,57 @@
-{% extends "base.html" %}
+{% extends "base_admin.html" %} 
+{% load static %} {# Aseguramos la carga de estáticos si fuera necesario #}
 
 {% block content %}
-    <h2>
-        {% if form.instance.pk %}
-            Editar Dirección: {{ form.instance.nombre_direccion }}
-        {% else %}
-            Crear Nueva Dirección
-        {% endif %}
-    </h2>
+    {# Determinar si es Creación o Edición para el título #}
+    {% if object %}
+        <h2 class="text-warning">Editar Dirección: {{ object.nombre_direccion }}</h2>
+    {% else %}
+        <h2 class="text-primary">Crear Nueva Dirección</h2>
+    {% endif %}
 
-    <form method="post">
-        {% csrf_token %}
-        
-        {# Renderiza el formulario completo con sus campos y widgets #}
-        {{ form.as_p }} 
+    <div class="card shadow mb-4">
+        <div class="card-body">
+            
+            <form method="POST">
+                {% csrf_token %}
+                
+                {# Iterar sobre los campos para aplicar el estilo 'form-control' #}
+                {% for field in form %}
+                    <div style="margin-bottom: 20px;">
+                        <label for="{{ field.id_for_label }}">{{ field.label }}:</label>
+                        {{ field }}
+                        
+                        {% if field.errors %}
+                            <div style="color: red; font-size: 0.85em;">
+                                {{ field.errors }}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+                
+                {# Script para forzar la clase form-control si no se añadió en forms.py/views.py #}
+                <script>
+                    document.addEventListener('DOMContentLoaded', function() {
+                        const inputs = document.querySelectorAll('input, select, textarea');
+                        inputs.forEach(input => {
+                            // Aseguramos que solo se aplique a inputs dentro del contenido principal
+                            if (!input.classList.contains('form-control')) {
+                                input.classList.add('form-control');
+                            }
+                        });
+                    });
+                </script>
 
-        <button type="submit">Guardar Dirección</button>
-        
-        {# Enlace para cancelar o volver #}
-        <a href="{% url 'organizacion:direccion_list' %}">Cancelar y Volver al Listado</a>
-    </form>
+                {# Botones de acción #}
+                <button type="submit" class="btn {% if object %}btn-warning{% else %}btn-primary{% endif %} mt-3">
+                    {% if object %}Guardar Cambios{% else %}Crear Dirección{% endif %}
+                </button>
+                
+                <a href="{% url 'organizacion:direccion_list' %}" class="btn btn-secondary mt-3 ml-2">
+                    Cancelar
+                </a>
+            </form>
+            
+        </div>
+    </div>
 {% endblock content %}

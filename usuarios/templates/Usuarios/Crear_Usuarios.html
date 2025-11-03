@@ -1,40 +1,59 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Crear Usuario</title>
-</head>
-<body>
-    <h1>Crear Usuario</h1>
-    
-    <form method="POST">
-        {% csrf_token %}
-        
-        <label>Nombre:</label><br>
-        <input type="text" name="nombre" required><br><br>
-        
-        <label>Apellido:</label><br>
-        <input type="text" name="apellido" required><br><br>
-        
-        <label>Correo:</label><br>
-        <input type="email" name="correo" required><br><br>
-        
-        <label>Teléfono:</label><br>
-        <input type="text" name="telefono" required><br><br>
-        
-        <label>Contraseña:</label><br>
-        <input type="password" name="contraseña" required><br><br>
-        
-        <label>Rol:</label><br>
-        <select name="rol" required>
-            <option value="">Seleccione un rol...</option>
-            {% for rol in roles %}
-                <option value="{{ rol.id }}">{{ rol.nombre_rol }}</option>
-            {% endfor %}
-        </select><br><br>
-        <button type="submit">Crear Usuario</button>
-        <a href="{% url 'menu_usuarios' %}">
-            <button type="button">Volver</button>
-        </a>
-    </form>
-</body>
-</html>
+{% extends "base_admin.html" %} 
+{% block content %}
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h4 class="m-4 font-weight-bold text-primary">Crear Nuevo Usuario</h4>
+        </div>
+        <div class="card-body">
+            
+            <form method="POST">
+                {% csrf_token %}
+                
+                {# APLICAMOS ESTILO EN LÍNEA: margin-bottom: 20px #}
+                <div style="margin-bottom: 20px;"> 
+                    <label for="nombre">Nombre:</label>
+                    <input type="text" name="nombre" id="nombre" class="form-control" required>
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <label for="apellido">Apellido:</label>
+                    <input type="text" name="apellido" id="apellido" class="form-control" required>
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <label for="correo">Correo:</label>
+                    <input type="email" name="correo" id="correo" class="form-control" required>
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <label for="telefono">Teléfono:</label>
+                    <input type="text" name="telefono" id="telefono" class="form-control" required>
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <label for="contraseña">Contraseña:</label>
+                    <input type="password" name="contraseña" id="contraseña" class="form-control" required>
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <label for="rol">Rol:</label>
+                    <select name="rol" id="rol" class="form-control" required>
+                        <option value="">Seleccione un rol...</option>
+                        {% for rol in roles %}
+                            <option value="{{ rol.id }}">{{ rol.nombre_rol }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <button type="submit" class="btn btn-primary mt-3">
+                    Crear Usuario
+                </button>
+                
+                <a href="{% url 'menu_usuarios' %}" class="btn btn-secondary mt-3 ml-2">
+                    Volver al Menú
+                </a>
+            </form>
+            
+        </div>
+    </div>
+{% endblock content %}
