@@ -34,8 +34,8 @@ class Solicitud(models.Model):
         return f"Solicitud #{self.id} - {self.tipo_incidencia}"
 
 class Encuesta(models.Model):
-    solicitud = models.ForeignKey(Solicitud, on_delete=models.CASCADE)
-    usuario = models.ForeignKey('usuarios.Usuario', on_delete=models.PROTECT)
+    solicitud = models.ForeignKey(Solicitud, on_delete=models.CASCADE) 
+    usuario = models.ForeignKey('usuarios.Usuario', on_delete=models.SET_NULL, null=True, blank=True)
     titulo = models.CharField(max_length=255)
     descripcion = models.TextField(blank=True)
     ubicacion = models.CharField(max_length=255)

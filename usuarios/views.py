@@ -4,8 +4,9 @@ from django.contrib import messages
 from registration.models import Profile
 from .models import Usuario, Rol
 from .forms import *
-from django.shortcuts import get_object_or_404
 from django.contrib.auth.hashers import make_password
+from django.shortcuts import get_object_or_404, redirect
+from .models import Usuario
 
 # MENÚ PRINCIPAL DE USUARIOS
 @login_required
@@ -96,8 +97,12 @@ def usuario_eliminar(request, id_usuario):
     return redirect
 
 @login_required
-def usuario_bloquear(request, id_usuario):
+def usuario_bloquear_desbloquear(request, id_usuario):
     usuario = get_object_or_404(Usuario, pk=id_usuario)
-    usuario.esta_activo = not usuario.esta_activo 
+
+    # Invertir el estado (si está activo, lo desactiva, y viceversa)
+    usuario.esta_activo = not usuario.esta_activo
     usuario.save()
+
+    # Redirigir de nuevo a la lista
     return redirect('lista_usuarios')

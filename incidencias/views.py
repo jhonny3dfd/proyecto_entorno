@@ -13,10 +13,6 @@ from usuarios.models import Usuario
 
 # --- 1. FUNCIÓN AUXILIAR PARA OBTENER EL PERFIL DE USUARIO ---
 def _get_custom_user(request):
-    """
-    Intenta obtener el perfil de usuario personalizado (usuarios.Usuario) 
-    a partir del usuario de autenticación de Django (request.user).
-    """
     if not request.user.is_authenticated:
         return None
     
@@ -25,12 +21,12 @@ def _get_custom_user(request):
         
     except Usuario.DoesNotExist:
         messages.error(request, f"ERROR: El usuario {request.user.email} (Admin) no tiene un perfil en la tabla 'usuarios.Usuario'. Debe crearlo.")
-        return None 
-    
+        # 🚨 ESTO DEBE CAMBIAR DEBAJO 🚨
+        return None # <-- Debe retornar None para evitar el bucle infinito y la falla
+        
     except Exception as e:
         messages.error(request, f"Error inesperado al obtener el perfil de usuario: {e}")
         return None
-
 
 # --- 2. VISTAS BASADAS EN CLASES ---
 
@@ -148,8 +144,33 @@ class SolicitudUpdateView(LoginRequiredMixin, UpdateView):
     model = Solicitud
     form_class = SolicitudForm
     template_name = 'incidencias/solicitud_form.html'
+    
+    def get_object(self, queryset=None):
+        return get_object_or_404(Solicitud, pk=self.kwargs['pk'])
+
+    # 🚨 NUEVA FUNCIÓN PARA BLOQUEAR LA EDICIÓN
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        
+        # 1. Obtener la encuesta asociada
+        try:
+            encuesta = Encuesta.objects.get(solicitud=self.object)
+        except Encuesta.DoesNotExist:
+            # Si no hay encuesta, puede seguir para crearla o manejar el error.
+            return super().get(request, *args, **kwargs)
+
+        # 2. Verificar si la encuesta está activa
+        if encuesta.activa:
+            messages.warning(request, "La Incidencia no puede ser editada mientras la Encuesta asociada esté ACTIVA. Bloquéela primero.")
+            # 3. Redirigir al detalle de la solicitud para que el usuario pueda desactivarla
+            return redirect('solicitud_detail', pk=self.object.pk) 
+        
+        # Si la encuesta está inactiva, permite la edición
+        return super().get(request, *args, **kwargs)
+
 
     def get_context_data(self, **kwargs):
+        # ... (El resto de tu lógica para cargar los formularios en el contexto) ...
         context = super().get_context_data(**kwargs)
         solicitud = self.get_object()
         
@@ -163,31 +184,53 @@ class SolicitudUpdateView(LoginRequiredMixin, UpdateView):
         else:
             context['encuesta_form'] = EncuestaForm(instance=encuesta_instance)
         
-        context['multimedia_existente'] = Multimedia.objects.filter(encuesta__solicitud=solicitud)
-
         return context
 
-    def get_object(self, queryset=None):
-        return get_object_or_404(Solicitud, pk=self.kwargs['pk'])
-
+    # ... (El resto de form_valid y form_invalid de SolicitudUpdateView) ...
     def form_valid(self, form):
-        messages.success(self.request, "Solicitud y Encuesta actualizadas exitosamente.")
-        return super().form_valid(form)
+        # ... (Asegúrate que tu form_valid maneje la actualización de ambos formularios)
+        
+        context = self.get_context_data()
+        encuesta_form = context['encuesta_form']
+        
+        if encuesta_form.is_valid():
+            with transaction.atomic():
+                # Guarda la Solicitud
+                form.save()
+                
+                # Guarda la Encuesta
+                encuesta = encuesta_form.save(commit=False)
+                encuesta.solicitud = form.instance # Relacionar con la solicitud existente
+                # El campo 'usuario' no se actualiza a menos que se necesite
+                encuesta.save()
+
+            messages.success(self.request, "Solicitud y Encuesta actualizadas exitosamente.")
+            return super().form_valid(form)
+        else:
+            # Si la encuesta falla, re-renderiza con el error
+            return self.render_to_response(self.get_context_data(form=form))
 
 
 # --- 7. FUNCIÓN PARA TOGGLE DE ESTADO DE ENCUESTA --- (Lógica de tu código original, no modificada)
 @require_POST
 def toggle_encuesta_status(request, pk):
-    if not request.user.is_authenticated:
-        return HttpResponseBadRequest("Usuario no autenticado")
-
+    """
+    Alterna el estado 'activa' de la Encuesta asociada a una Solicitud.
+    """
     solicitud = get_object_or_404(Solicitud, pk=pk)
+    
     try:
         encuesta = Encuesta.objects.get(solicitud=solicitud)
+        
+        # Invertir el estado (Activa -> Inactiva / Inactiva -> Activa)
         encuesta.activa = not encuesta.activa
         encuesta.save()
-        messages.success(request, f"El estado de la encuesta ha sido cambiado a {'Activa' if encuesta.activa else 'Inactiva'}.")
+        
+        estado_nuevo = "ACTIVA" if encuesta.activa else "BLOQUEADA (Inactiva)"
+        messages.success(request, f"El estado de la Encuesta para la Solicitud #{pk} ha cambiado a {estado_nuevo}.")
+        
     except Encuesta.DoesNotExist:
-        messages.error(request, "Error: No existe una encuesta para esta solicitud.")
-
+        messages.error(request, f"Error: No se encontró la Encuesta asociada a la Solicitud #{pk}.")
+        
+    # Redirigir siempre de vuelta a la página de detalle
     return redirect('solicitud_detail', pk=pk)

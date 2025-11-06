@@ -3,6 +3,18 @@
 {% block content %}
     <h1>{% if form.instance.pk %}Editar{% else %}Crear Nueva{% endif %} Incidencia y Encuesta 📝</h1>
     
+    {% comment %} Mostrar Mensajes (necesario si la vista redirige con errores, ej. ProtectedError al guardar) {% endcomment %}
+    {% if messages %}
+        <div class="alert-container my-3">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
     <form method="post" enctype="multipart/form-data"> {% csrf_token %}
 
         <div class="card mb-4">
@@ -11,6 +23,7 @@
                 <p class="text-muted">Información administrativa (puede ser para uso interno o delegación).</p>
             </div>
             <div class="card-body">
+                {% comment %} El form.as_p renderiza los campos automáticamente {% endcomment %}
                 {{ form.as_p }}
             </div>
         </div>
@@ -18,9 +31,10 @@
         <div class="card mb-4">
             <div class="card-header">
                 <h2>2. Información Específica de la Incidencia (Encuesta)</h2>
-                <p class="text-muted">Datos de campo reportados por el Territorial.</p>
+                <p class="text-muted">Datos de campo reportados por el Territorial. Estos campos solo se pueden editar si la encuesta está Inactiva (Bloqueada).</p>
             </div>
             <div class="card-body">
+                {% comment %} El encuesta_form.as_p es crítico, ya que contiene el dropdown de prioridad {% endcomment %}
                 {{ encuesta_form.as_p }}
                 
                 {% if multimedia_existente %}
@@ -36,7 +50,12 @@
             </div>
         </div>
 
-        <button type="submit" class="btn btn-primary">{% if form.instance.pk %}Actualizar{% else %}Crear{% endif %} Solicitud y Detalles</button>
-        <a href="{% url 'solicitud_list' %}" class="btn btn-secondary">Cancelar</a>
+        <button type="submit" class="btn btn-primary btn-lg">{% if form.instance.pk %}Actualizar{% else %}Crear{% endif %} Solicitud y Detalles</button>
+        
+        {% if form.instance.pk %}
+            <a href="{% url 'solicitud_detail' pk=form.instance.pk %}" class="btn btn-secondary">Volver al Detalle</a>
+        {% else %}
+            <a href="{% url 'solicitud_list' %}" class="btn btn-secondary">Cancelar</a>
+        {% endif %}
     </form>
-{% endblock %}
+{% endblock content %}

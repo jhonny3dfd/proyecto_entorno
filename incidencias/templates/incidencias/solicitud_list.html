@@ -2,48 +2,60 @@
 
 {% block content %}
     <h1>Listado de Solicitudes (Incidencias)</h1>
+    <div class="actions-header" style="display: flex; gap: 10px;"></div>
+    
+    <p>
+       <a href="{% url 'solicitud_create' %}" class="btn btn-primary">Crear Nueva Solicitud ➕</a>
+    </p>
+    
     {% if solicitudes %}
         <table border="1" width="100%">
             <thead>
                 <tr>
                     <th>ID</th>
+                    <th>Título (Encuesta)</th>
                     <th>Tipo de Incidencia</th>
                     <th>Estado</th>
                     <th>Cuadrilla Asignada</th>
                     <th>Fecha Creación</th>
-                    <th>Acciones</th> </tr>
+                    <th>Acciones</th> 
+                </tr>
             </thead>
             <tbody>
                 {% for sol in solicitudes %}
+                    {% with encuesta=sol.encuesta_set.first %}
                     <tr>
                         <td>{{ sol.id }}</td>
+                        <td>{{ encuesta.titulo|default:"(Sin título)" }}</td>
                         <td>{{ sol.tipo_incidencia }}</td>
 
                         <td>
-                            <strong>{{ sol.estado }}</strong>
-                            <span style="color: red; font-size: 0.8em;">({{ sol.estado }})</span>
+                            <span class="badge bg-primary">{{ sol.estado }}</span>
+                            {% if encuesta %}
+                                <span class="badge bg-{% if encuesta.activa %}success{% else %}danger{% endif %}" title="Estado de la Encuesta">
+                                    {% if encuesta.activa %}Activa{% else %}Inactiva{% endif %}
+                                </span>
+                            {% endif %}
                         </td>
 
                         <td>{{ sol.cuadrilla.nombre_cuadrilla|default:"Sin asignar" }}</td>
                         <td>{{ sol.fecha_creacion|date:"Y-m-d H:i" }}</td>
 
                         <td>
-                            <a href="{% url 'solicitud_detail' sol.pk %}">Ver</a>
+                            <a href="{% url 'solicitud_detail' sol.pk %}" class="btn btn-sm btn-info me-1">Ver</a>
 
-                            {% comment %} Condición para mostrar EDITAR {% endcomment %}
-                            {% if sol.estado == 'RECHAZADA' or sol.estado == 'en proceso' or sol.estado == 'terminado' %}
-                                | <a href="{% url 'solicitud_update' pk=sol.pk %}">Editar</a>
+                            {% comment %} Si el estado no es FINALIZADA, permitir editar. La restricción de 'activa' se hace en la vista de edición. {% endcomment %}
+                            {% if sol.estado != 'FINALIZADA' %}
+                                <a href="{% url 'solicitud_update' pk=sol.pk %}" class="btn btn-sm btn-warning">Editar</a>
                             {% endif %}
                         </td>
                     </tr>
+                    {% endwith %}
                 {% endfor %}
             </tbody>
         </table>
     {% else %}
         <p>No hay solicitudes de incidencia registradas.</p>
     {% endif %}
-
-    <p>
-       <a href="{% url 'solicitud_create' %}" class="btn btn-primary">Crear Nueva Solicitud</a>
-    </p>
+    
 {% endblock content %}
