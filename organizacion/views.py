@@ -112,6 +112,8 @@ class DepartamentoDeleteView(DeleteView):
     success_url = reverse_lazy('organizacion:departamento_list')
 
 
+#Vista de Cuadrillas
+
 class CuadrillaListView(ListView):
     model = Cuadrilla
     template_name = 'organizacion/cuadrilla_list.html' 

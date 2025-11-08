@@ -1,0 +1,46 @@
+{% extends "core/main_admin.html" %}
+
+{% block title %}
+    {% if form.instance.pk %}
+        Editar Cuadrilla: {{ form.instance.nombre_cuadrilla }}
+    {% else %}
+        Crear Nueva Cuadrilla
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+    
+    {% comment %} 
+        La vista CuadrillaCreateView pasa el ID del departamento a la inicial. 
+        Para simplificar, mostraremos el ID del departamento si está disponible en 'initial' o en el objeto.
+        Como get_initial rellena el campo 'departamento', el campo se mostrará pre-seleccionado o incluso oculto.
+    {% endcomment %}
+    
+    <h2>
+        {% if form.instance.pk %}
+            Editar Cuadrilla: {{ form.instance.nombre_cuadrilla }}
+        {% else %}
+            Crear Cuadrilla para Departamento #{{ initial.departamento|default:"[ID no disponible]" }}
+        {% endif %}
+    </h2>
+    <p class="lead">Completa la información del equipo de trabajo.</p>
+
+    <form method="post">
+        {% csrf_token %}
+        
+        <div class="card p-4">
+            {{ form.as_p }}
+        </div>
+        
+        <div class="mt-4">
+            <button type="submit" class="btn btn-primary btn-lg">Guardar Cuadrilla</button>
+            
+            {% if form.instance.pk %}
+                <a href="{% url 'organizacion:cuadrilla_detail' form.instance.pk %}" class="btn btn-secondary">Cancelar</a>
+            {% else %}
+                {# Si estás creando, redirigir al listado de departamentos por defecto #}
+                <a href="{% url 'organizacion:departamento_list' %}" class="btn btn-secondary">Cancelar</a>
+            {% endif %}
+        </div>
+    </form>
+{% endblock content %}

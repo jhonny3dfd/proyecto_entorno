@@ -36,6 +36,27 @@ class SolicitudListView(LoginRequiredMixin, ListView):
     template_name = 'incidencias/solicitud_list.html'
     ordering = ['-fecha_creacion']
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        
+        filtro_estado = self.request.GET.get('estado')
+
+        if filtro_estado:
+            if filtro_estado == 'ENCUESTA_ACTIVA':
+                # Filtra Solicitudes cuya Encuesta está activa
+                queryset = queryset.filter(encuesta__activa=True)
+                
+            elif filtro_estado == 'ENCUESTA_BLOQUEADA':
+                # Filtra Solicitudes cuya Encuesta NO está activa
+                queryset = queryset.filter(encuesta__activa=False)
+            
+            else:
+                # Filtra por estados de Solicitud (CREADA, FINALIZADA, ABIERTA, etc.)
+                # El valor de filtro_estado debe coincidir exactamente con el valor del modelo
+                queryset = queryset.filter(estado=filtro_estado)
+
+        return queryset
+
 class SolicitudDetailView(LoginRequiredMixin, DetailView):
     model = Solicitud
     context_object_name = 'solicitud'

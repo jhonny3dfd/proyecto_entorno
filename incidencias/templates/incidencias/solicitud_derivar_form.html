@@ -1,0 +1,26 @@
+{% extends "core/main_admin.html" %} 
+
+{% block title %}Derivar Solicitud #{{ object.pk }}{% endblock %}
+
+{% block content %}
+    <h1>Derivar Solicitud #{{ object.pk }} a Cuadrilla 📬</h1>
+    <p class="lead">Asigna una cuadrilla para que se haga cargo de la incidencia. El estado cambiará a **DERIVADA**.</p>
+    <hr>
+    
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="card mb-4">
+            <div class="card-header bg-warning text-dark">
+                <h4>Asignación y Notas</h4>
+            </div>
+            <div class="card-body">
+                {{ form.as_p }}
+                {% comment %} El formulario aquí muestra 'Cuadrilla' (combo) y 'Observaciones' (textarea) {% endcomment %}
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-warning btn-lg">Derivar Solicitud</button>
+        <a href="{% url 'solicitud_detail' pk=object.pk %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+{% endblock content %}
