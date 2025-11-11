@@ -1,66 +1,65 @@
-{% extends "base_admin.html" %} 
+{% extends "base_admin.html" %}
+
 {% block content %}
-    <h2>Listado de Departamentos</h2>
     
-    <div class="actions-header" style="display: flex; gap: 10px;">
-        {# 1. BOTÓN PRINCIPAL DE CREACIÓN #}
-        <a href="{% url 'organizacion:departamento_create' %}" class="btn btn-primary">
-            Crear Nuevo Departamento
-        </a> 
+    <div class="content-header">
+        <h2>Listado de Departamentos</h2>
         
-        {# 2. BOTÓN SECUNDARIO PARA VOLVER #}
-        <a href="{% url 'main_admin' %}" class="btn btn-secondary">
-            Volver al Menú Principal
-        </a> 
+        <div class="actions-header">
+            <a href="{% url 'organizacion:departamento_create' %}" class="btn btn-primary">
+                Crear Nuevo Departamento
+            </a> 
+            <a href="{% url 'main_admin' %}" class="btn btn-secondary">
+                Volver al Menú
+            </a> 
+        </div>
     </div>
 
-    <hr>
-
     {% if departamentos %}
-        <table border="1" width="100%">
-            <thead>
-                <tr>
-                    <th>Nro</th>
-                    <th>Nombre Departamento</th>
-                    <th>Dirección Asignada</th>
-                    <th>Encargado</th>
-                    <th>Estado</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for depto in departamentos %} 
-                <tr>
-                    <td>{{ forloop.counter }}</td>
-                    <td>{{ depto.departamento }}</td>
-                    <td>{{ depto.direccion.nombre_direccion }}</td>
-                    <td>{{ depto.nombre_encargado }}</td>
-                    <td>
-                        {# Estado: Se usa 'badge' para un estilo moderno #}
+        
+        <div class="card-grid">
+            
+            {% for depto in departamentos %} 
+            <div class="card">
+                
+                <div class="card-body">
+                    <h3>{{ depto.departamento }}</h3>
+                    
+                    <p class="card-data">
+                        <strong>Nro:</strong> {{ forloop.counter }}
+                    </p>
+                    <p class="card-data">
+                        <strong>Encargado:</strong> {{ depto.nombre_encargado }}
+                    </p>
+                    <p class="card-data">
+                        <strong>Dirección:</strong> {{ depto.direccion.nombre_direccion }}
+                    </p>
+                    <p class="card-data">
+                        <strong>Estado:</strong>
                         {% if depto.activo %}
-                            <span class="badge bg-success">Activo</span>
+                            <span class="badge badge-success">Activo</span>
                         {% else %}
-                            <span class="badge bg-danger">Inactivo/Bloqueado</span>
+                            <span class="badge badge-danger">Inactivo</span>
                         {% endif %}
-                    </td>
-                    <td>
-                        {# 3. BOTONES DE ACCIÓN EN TABLA (usando btn-sm) #}
-                        <a href="{% url 'organizacion:departamento_detail' depto.pk %}" class="btn btn-sm btn-info">Ver</a> 
-
-                        <a href="{% url 'organizacion:departamento_update' depto.pk %}" class="btn btn-sm btn-warning">Editar</a> 
-
-                        {# 4. BOTÓN CONDICIONAL DE ACTIVAR/BLOQUEAR #}
-                        {% if depto.activo %}
-                            <a href="{% url 'organizacion:departamento_update' depto.pk %}?action=bloquear" class="btn btn-sm btn-danger">Bloquear</a>
-                        {% else %}
-                            <a href="{% url 'organizacion:departamento_update' depto.pk %}?action=activar" class="btn btn-sm btn-success">Activar</a>
-                        {% endif %}
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                    </p>
+                </div>
+                
+                <div class="card-footer">
+                    <a href="{% url 'organizacion:departamento_detail' depto.pk %}" class="btn btn-sm btn-primary">Ver</a> 
+                    <a href="{% url 'organizacion:departamento_update' depto.pk %}" class="btn btn-sm btn-primary">Editar</a> 
+                    {% if depto.activo %}
+                        <a href="{% url 'organizacion:departamento_update' depto.pk %}?action=bloquear" class="btn btn-sm btn-primary">Bloquear</a>
+                    {% else %}
+                        <a href="{% url 'organizacion:departamento_update' depto.pk %}?action=activar" class="btn btn-sm btn-primary">Activar</a>
+                    {% endif %}
+                </div>
+                
+            </div>
+            {% endfor %}
+            </div>
+        
     {% else %}
         <p>No hay departamentos registrados.</p>
     {% endif %}
+
 {% endblock content %}

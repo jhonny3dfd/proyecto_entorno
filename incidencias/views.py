@@ -2,7 +2,7 @@ from django.http import HttpResponseBadRequest, JsonResponse
 from django.views.decorators.http import require_POST
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse_lazy, reverse
-from django.views.generic import ListView, DetailView, CreateView, UpdateView 
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView 
 from django.db import transaction
 from django.contrib import messages 
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -35,27 +35,6 @@ class SolicitudListView(LoginRequiredMixin, ListView):
     context_object_name = 'solicitudes'
     template_name = 'incidencias/solicitud_list.html'
     ordering = ['-fecha_creacion']
-
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        
-        filtro_estado = self.request.GET.get('estado')
-
-        if filtro_estado:
-            if filtro_estado == 'ENCUESTA_ACTIVA':
-                # Filtra Solicitudes cuya Encuesta está activa
-                queryset = queryset.filter(encuesta__activa=True)
-                
-            elif filtro_estado == 'ENCUESTA_BLOQUEADA':
-                # Filtra Solicitudes cuya Encuesta NO está activa
-                queryset = queryset.filter(encuesta__activa=False)
-            
-            else:
-                # Filtra por estados de Solicitud (CREADA, FINALIZADA, ABIERTA, etc.)
-                # El valor de filtro_estado debe coincidir exactamente con el valor del modelo
-                queryset = queryset.filter(estado=filtro_estado)
-
-        return queryset
 
 class SolicitudDetailView(LoginRequiredMixin, DetailView):
     model = Solicitud
@@ -255,3 +234,16 @@ def toggle_encuesta_status(request, pk):
         
     # Redirigir siempre de vuelta a la página de detalle
     return redirect('solicitud_detail', pk=pk)
+
+
+class SolicitudDeleteView(LoginRequiredMixin, DeleteView):
+    """
+    Vista para confirmar y eliminar una Solicitud.
+    """
+    model = Solicitud
+    template_name = 'incidencias/solicitud_confirm_delete.html'
+    success_url = reverse_lazy('solicitud_list') # A dónde ir después de borrar
+    
+    def form_valid(self, form):
+        messages.success(self.request, "La incidencia ha sido eliminada exitosamente.")
+        return super().form_valid(form)

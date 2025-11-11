@@ -1,65 +1,63 @@
-{% extends "base_admin.html" %} 
+{% extends "base_admin.html" %}
 
 {% block content %}
-    <h2>Listado de Direcciones</h2>
     
-    <div class="actions-header" style="display: flex; gap: 10px;">
-        {# 1. BOTÓN PRINCIPAL DE CREACIÓN #}
-        <a href="{% url 'organizacion:direccion_create' %}" class="btn btn-primary">
-            Crear Nueva Dirección
-        </a> 
+    <div class="content-header">
+        <h2>Listado de Direcciones</h2>
         
-        {# 2. BOTÓN SECUNDARIO PARA VOLVER #}
-        <a href="{% url 'main_admin' %}" class="btn btn-secondary">
-            Volver al Menú Principal
-        </a> 
+        <div class="actions-header">
+            <a href="{% url 'organizacion:direccion_create' %}" class="btn btn-primary">
+                Crear Nueva Dirección
+            </a> 
+            <a href="{% url 'main_admin' %}" class="btn btn-secondary">
+                Volver al Menú
+            </a> 
+        </div>
     </div>
-    
-    <hr>
-    
+
     {% if direcciones %}
-        <table border="1" width="100%">
-            <thead>
-                <tr>
-                    <th>Nro</th>
-                    <th>Nombre Dirección</th>
-                    <th>Nombre Encargado</th>
-                    <th>Estado</th>
-                    <th>Acciones (Ver, Editar, Bloquear)</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for dir in direcciones %} 
-                <tr>
-                    <td>{{ forloop.counter }}</td>
-                    <td>{{ dir.nombre_direccion }}</td>
-                    <td>{{ dir.nombre_encargado }}</td>
-                    <td>
-                        {# Se usan clases 'badge' para un estilo más moderno del estado #}
+        
+        <div class="card-grid">
+            
+            {% for dir in direcciones %} 
+            <div class="card">
+                
+                <div class="card-body">
+                    <h3>{{ dir.nombre_direccion }}</h3>
+                    
+                    <p class="card-data">
+                        <strong>Nro:</strong> {{ forloop.counter }}
+                    </p>
+                    <p class="card-data">
+                        <strong>Encargado:</strong> {{ dir.nombre_encargado }}
+                    </p>
+                    <p class="card-data">
+                        <strong>Estado:</strong>
                         {% if dir.activa %}
                             <span class="badge badge-success">Activa</span>
                         {% else %}
                             <span class="badge badge-danger">Bloqueada</span>
                         {% endif %}
-                    </td>
-                    <td>
-                        {# 3. BOTONES DE ACCIÓN EN TABLA (usando btn-sm para tamaño pequeño) #}
-                        <a href="{% url 'organizacion:direccion_detail' dir.pk %}" class="btn btn-sm btn-info">Ver</a> 
-
-                        <a href="{% url 'organizacion:direccion_update' dir.pk %}" class="btn btn-sm btn-warning">Editar</a> 
-
-                        {# 4. BOTÓN CONDICIONAL DE ACTIVAR/BLOQUEAR #}
-                        {% if dir.activa %}
-                            <a href="{% url 'organizacion:direccion_update' dir.pk %}?action=bloquear" class="btn btn-sm btn-danger">Bloquear</a>
-                        {% else %}
-                            <a href="{% url 'organizacion:direccion_update' dir.pk %}?action=activar" class="btn btn-sm btn-success">Activar</a>
-                        {% endif %}
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                    </p>
+                </div>
+                
+                <div class="card-footer">
+                    <a href="{% url 'organizacion:direccion_detail' dir.pk %}" class="btn btn-sm btn-primary">Ver</a> 
+                    <a href="{% url 'organizacion:direccion_update' dir.pk %}" class="btn btn-sm btn-primary">Editar</a> 
+                    
+                    {% if dir.activa %}
+                        <a href="{% url 'organizacion:direccion_update' dir.pk %}?action=bloquear" class="btn btn-sm btn-primary">Bloquear</a>
+                    {% else %}
+                        <a href="{% url 'organizacion:direccion_update' dir.pk %}?action=activar" class="btn btn-sm btn-primary">Activar</a>
+                    {% endif %}
+                </div>
+                
+            </div>
+            {% endfor %}
+            </div>
+        
     {% else %}
         <p>No hay direcciones registradas.</p>
     {% endif %}
+
 {% endblock content %}

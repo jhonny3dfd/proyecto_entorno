@@ -1,83 +1,76 @@
-{% extends "core/main_admin.html" %}
-
-{% block content %}
-    <h1>Listado de Solicitudes (Incidencias)</h1>
+{% extends "base_admin.html" %} {% block content %}
     
-    {# 🚨 ESTRUCTURA ORDENADA CON FLEXBOX 🚨 #}
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="content-header">
+        <h2>Listado de Incidencias</h2>
         
-        <div class="dropdown">
-            <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton1" data-bs-toggle="dropdown" aria-expanded="false">
-                Filtrar por Estado 🔎
-            </button>
-            <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-                <li><a class="dropdown-item" href="{% url 'solicitud_list' %}">Mostrar Todos</a></li>
-                <li><h6 class="dropdown-header">Estados de Solicitud</h6></li>
-                {# Los estados vienen de tu models.py #}
-                <li><a class="dropdown-item" href="{% url 'solicitud_list' %}?estado=CREADA">CREADA</a></li>
-                <li><a class="dropdown-item" href="{% url 'solicitud_list' %}?estado=ABIERTA">ABIERTA</a></li>
-                <li><a class="dropdown-item" href="{% url 'solicitud_list' %}?estado=DERIVADA">DERIVADA</a></li>
-                <li><a class="dropdown-item" href="{% url 'solicitud_list' %}?estado=EN PROCESO">EN PROCESO</a></li>
-                <li><a class="dropdown-item" href="{% url 'solicitud_list' %}?estado=FINALIZADA">FINALIZADA</a></li>
-                <li><a class="dropdown-item" href="{% url 'solicitud_list' %}?estado=RECHAZADA">RECHAZADA</a></li>
-                <li><hr class="dropdown-divider"></li>
-                <li><h6 class="dropdown-header">Estados de Encuesta</h6></li>
-                <li><a class="dropdown-item" href="{% url 'solicitud_list' %}?estado=ENCUESTA_ACTIVA">Encuestas Activas</a></li>
-                <li><a class="dropdown-item" href="{% url 'solicitud_list' %}?estado=ENCUESTA_BLOQUEADA">Encuestas Bloqueadas</a></li>
-            </ul>
+        <div class="actions-header">
+            <a href="{% url 'solicitud_create' %}" class="btn btn-primary">
+                Crear Nueva Incidencia
+            </a> 
+            <a href="{% url 'main_admin' %}" class="btn btn-secondary">
+                Volver al Menú
+            </a> 
         </div>
-        <a href="{% url 'solicitud_create' %}" class="btn btn-success">Crear Nueva Solicitud +</a>
     </div>
 
     {% if solicitudes %}
-        <div class="table-responsive">
-            <table class="table table-bordered table-hover" id="dataTable" width="100%" cellspacing="0">
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Tipo de Incidencia</th>
-                        <th>Estado</th>
-                        <th>Cuadrilla Asignada</th>
-                        <th>Fecha Creación</th>
-                        <th>Acciones</th> 
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for sol in solicitudes %}
-                    {% with encuesta=sol.encuesta_set.first %}
-                    <tr>
-                        <td>{{ sol.id }}</td>
-                        <td>{{ sol.tipo_incidencia }}</td>
+        
+        <div class="card-grid">
+            
+            {% for sol in solicitudes %} 
+            {% with encuesta=sol.encuesta_set.first %} <div class="card">
+                
+                <div class="card-body">
+                    <h3>{{ encuesta.titulo|default:"(Sin título)" }}</h3>
+                    
+                    <p class="card-data">
+                        <strong>ID:</strong> {{ sol.id }}
+                    </p>
+                    <p class="card-data">
+                        <strong>Tipo:</strong> {{ sol.tipo_incidencia }}
+                    </p>
+                    <p class="card-data">
+                        <strong>Cuadrilla:</strong> {{ sol.cuadrilla.nombre_cuadrilla|default:"Sin asignar" }}
+                    </p>
+                    <p class="card-data">
+                        <strong>Creación:</strong> {{ sol.fecha_creacion|date:"d/m/Y H:i" }}
+                    </p>
+                    
+                    <p class="card-data">
+                        <strong>Estado:</strong>
+                        <span class="badge badge-success">{{ sol.estado }}</span>
+                        
+                        {% if encuesta %}
+                            <span class="badge {% if encuesta.activa %}badge-success{% else %}badge-danger{% endif %}" title="Estado de la Encuesta">
+                                Encuesta {% if encuesta.activa %}Activa{% else %}Inactiva{% endif %}
+                            </span>
+                        {% endif %}
+                    </p>
+                </div>
+                
+                <div class="card-footer">
+                    <a href="{% url 'solicitud_detail' sol.pk %}" class="btn btn-sm btn-primary">
+                        <i class="fa-solid fa-eye"></i> Ver
+                    </a> 
 
-                        <td>
-                            {# Estado de Solicitud con badge #}
-                            <span class="badge bg-primary me-1">{{ sol.estado }}</span>
-                            
-                            {# Estado de la Encuesta con badge #}
-                            {% if encuesta %}
-                                <span class="badge bg-{% if encuesta.activa %}success{% else %}danger{% endif %}" title="Estado de la Encuesta">
-                                    {% if encuesta.activa %}Activa{% else %}Bloqueada{% endif %}
-                                </span>
-                            {% endif %}
-                        </td>
-
-                        <td>{{ sol.cuadrilla.nombre_cuadrilla|default:"Sin asignar" }}</td>
-                        <td>{{ sol.fecha_creacion|date:"Y-m-d H:i" }}</td>
-
-                        <td>
-                            <a href="{% url 'solicitud_detail' sol.pk %}" class="btn btn-sm btn-info">Ver</a>
-                            {% if sol.estado != 'FINALIZADA' %}
-                                <a href="{% url 'solicitud_update' pk=sol.pk %}" class="btn btn-sm btn-warning">Editar</a>
-                            {% endif %}
-                        </td>
-                    </tr>
-                    {% endwith %}
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+                    {% if sol.estado != 'FINALIZADA' %}
+                        <a href="{% url 'solicitud_update' pk=sol.pk %}" class="btn btn-sm btn-primary">
+                            <i class="fa-solid fa-pencil"></i> Editar
+                        </a>
+                    {% endif %}
+                    
+                    <a href="{% url 'solicitud_delete' sol.pk %}" class="btn btn-sm btn-danger" title="Eliminar Incidencia">
+                        <i class="fa-solid fa-trash"></i>
+                    </a>
+                </div>
+                
+            </div>
+            {% endwith %}
+            {% endfor %}
+            </div>
+        
     {% else %}
-        <p class="alert alert-info">No hay solicitudes de incidencia registradas.</p>
+        <p>No hay solicitudes de incidencia registradas.</p>
     {% endif %}
-    
+
 {% endblock content %}
