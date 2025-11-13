@@ -30,97 +30,125 @@
                     
                     <p class="me-3 mb-2">
                         <strong>Estado Encuesta:</strong> 
-                        <span class="badge bg-{% if encuesta.activa %}success{% else %}danger{% endif %}">
-                            {% if encuesta.activa %}Activa (Bloquea para editar){% else %}Inactiva (Editable){% endif %}
+                        <span class="badge bg-{% if encuesta.activa %}success{% else %}danger{% endif %} me-2">
+                            {% if encuesta.activa %}Activa (Editable){% else %}Bloqueada (Inactiva){% endif %}
                         </span>
+                        
+                        <form method="POST" action="{% url 'toggle_encuesta_status' pk=solicitud.pk %}" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-sm btn-outline-secondary">
+                                {% if encuesta.activa %}Bloquear Edición 🔒{% else %}Activar Edición 🔓{% endif %}
+                            </button>
+                        </form>
                     </p>
-
-                    <form action="{% url 'toggle_encuesta_status' pk=solicitud.pk %}" method="post" style="display:inline-block; margin-right: 15px;">
-                        {% csrf_token %}
-                        <button type="submit" class="btn btn-sm btn-{% if encuesta.activa %}danger{% else %}success{% endif %} mb-2">
-                            {% if encuesta.activa %}Bloquear Encuesta 🔒{% else %}Activar Encuesta ✅{% endif %}
-                        </button>
-                    </form>
                     
-                    {% if solicitud.estado != 'FINALIZADA' %}
-                        <a href="{% url 'solicitud_update' pk=solicitud.pk %}" class="btn btn-sm btn-outline-primary mb-2">Editar Incidencia (Detalle y Archivos)</a>
-                    {% endif %}
-
-                {% else %}
-                    <p class="text-danger">⚠️ No se encontró la Encuesta asociada a esta Solicitud.</p>
                 {% endif %}
             {% endwith %}
 
-            <hr style="width: 100%;" class="my-3">
-            
-            {# Lógica de Resolución (De tu código original) #}
+            {# Lógica del botón de Derivación y Resolución #}
             {% if solicitud.estado == 'CREADA' or solicitud.estado == 'ABIERTA' %}
                 <a href="{% url 'solicitud_derivar' pk=solicitud.pk %}" class="btn btn-warning btn-sm me-2">
                     Derivar a Cuadrilla 📬
                 </a>
-            {% elif solicitud.estado != 'FINALIZADA' and solicitud.estado != 'DERIVADA' %}
-                <button class="btn btn-outline-warning btn-sm me-2" disabled>
-                    Solicitud Derivada
-                </button>
-            {% endif %}
-
-            {% if solicitud.estado == 'DERIVADA' %}
+            {% elif solicitud.estado == 'DERIVADA' %}
                 <a href="{% url 'solicitud_resolver' pk=solicitud.pk %}" class="btn btn-success btn-sm me-2">
                     Registrar Resolución ✅
+                </a>
+            {% elif solicitud.estado == 'EN PROCESO' %}
+                <a href="{% url 'solicitud_resolver' pk=solicitud.pk %}" class="btn btn-success btn-sm me-2">
+                    Continuar/Finalizar Resolución ✅
                 </a>
             {% elif solicitud.estado == 'FINALIZADA' %}
                 <button class="btn btn-outline-secondary btn-sm me-2" disabled>
                     Incidencia Finalizada
                 </button>
+            {% else %}
+                <button class="btn btn-outline-warning btn-sm me-2" disabled>
+                    Solicitud {{ solicitud.estado }}
+                </button>
             {% endif %}
-            
 
         </div>
     </div>
     
-    {% comment %} === SECCIÓN DE DETALLES DE INCIDENCIA (ENCUESTA) === {% endcomment %}
-    {% with encuesta=solicitud.encuesta_set.first %}
-        {% if encuesta %}
+    {% comment %} === SECCIÓN DE SOLICITUD / ENCUESTA === {% endcomment %}
+    <div class="row">
+        <div class="col-md-6">
             <div class="card mb-4">
-                <div class="card-header bg-info text-white">
-                    <h4>📝 Detalle Específico de la Incidencia (Encuesta)</h4>
+                <div class="card-header bg-primary text-white">
+                    <h4>Datos de la Solicitud (Administrativos)</h4>
                 </div>
                 <div class="card-body">
-                    <p>
-                        <strong>Título:</strong> {{ encuesta.titulo }}<br>
-                        <strong>Ubicación:</strong> {{ encuesta.ubicacion }}<br>
-                        <strong>Prioridad:</strong> <span class="badge bg-{% if encuesta.prioridad == 'ALTA' %}danger{% elif encuesta.prioridad == 'MEDIA' %}warning{% else %}primary{% endif %}">{{ encuesta.prioridad }}</span><br>
-                        <strong>Registrado por:</strong> {{ encuesta.usuario.nombre }} {{ encuesta.usuario.apellido }} ({{ encuesta.usuario.correo }})
-                    </p>
-                    <p>
-                        <strong>Descripción del Incidente:</strong><br>
-                        {{ encuesta.descripcion|linebreaksbr }}
-                    </p>
+                    <p><strong>Tipo de Incidencia:</strong> {{ solicitud.tipo_incidencia }}</p>
+                    <p><strong>Cuadrilla Asignada:</strong> {{ solicitud.cuadrilla.nombre_cuadrilla|default:"(Sin asignar)" }}</p>
+                    <p><strong>Fecha de Creación:</strong> {{ solicitud.fecha_creacion|date:"d M Y H:i" }}</p>
+                    <p><strong>Observaciones Internas:</strong></p>
+                    <p class="border p-2 bg-light">{{ solicitud.observaciones|linebreaksbr|default:"(No hay observaciones administrativas)" }}</p>
+                </div>
+                <div class="card-footer">
+                    {% if solicitud.estado != 'FINALIZADA' %}
+                        <a href="{% url 'solicitud_update' pk=solicitud.pk %}" class="btn btn-sm btn-outline-primary">Editar Solicitud</a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
 
-                    <h5 class="mt-4">Datos de Contacto del Vecino</h5>
-                    <p>
-                        <strong>Nombre:</strong> {{ encuesta.nombre_vecino }}<br>
-                        <strong>Teléfono:</strong> {{ encuesta.telefono_vecino }}<br>
-                        <strong>Correo:</strong> {{ encuesta.correo_vecino|default:"(No proporcionado)" }}
-                    </p>
-
-                    {% comment %} Mostrar Multimedia (Archivos Adjuntos) {% endcomment %}
-                    {% with multimedia=encuesta.multimedia_set.all %}
-                        {% if multimedia %}
-                            <h5 class="mt-4">Archivos Adjuntos (Evidencia)</h5>
-                            <ul>
-                            {% for media in multimedia %}
-                                <li>{{ media.tipo_multimedia }}: <a href="{{ media.ruta.url }}" target="_blank">{{ media.ruta.name }}</a></li>
-                            {% endfor %}
-                            </ul>
-                        {% endif %}
-                    {% endwith %}
-
+        <div class="col-md-6">
+            {% with encuesta=solicitud.encuesta_set.first %}
+                {% if encuesta %}
+                    <div class="card mb-4">
+                        <div class="card-header bg-info text-white">
+                            <h4>Datos de Campo (Encuesta)</h4>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Título:</strong> {{ encuesta.titulo }}</p>
+                            <p><strong>Ubicación:</strong> {{ encuesta.ubicacion }}</p>
+                            <p><strong>Prioridad:</strong> <span class="badge bg-secondary">{{ encuesta.prioridad }}</span></p>
+                            <p><strong>Descripción:</strong></p>
+                            <p class="border p-2 bg-light">{{ encuesta.descripcion|linebreaksbr }}</p>
+                            <p><strong>Contacto Vecino:</strong> {{ encuesta.nombre_vecino }} ({{ encuesta.telefono_vecino }} - {{ encuesta.correo_vecino|default:'Sin correo' }})</p>
+                        </div>
+                        <div class="card-footer">
+                            {% if encuesta.activa %}
+                                <p class="text-success small">La encuesta está **Activa** y puede ser editada por el Territorial.</p>
+                            {% else %}
+                                <p class="text-danger small">La encuesta está **Bloqueada** (Inactiva).</p>
+                                <a href="{% url 'solicitud_update' pk=solicitud.pk %}" class="btn btn-sm btn-outline-info">Editar Encuesta (Desbloquear primero)</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="alert alert-warning">No hay datos de Encuesta asociados a esta Solicitud.</div>
+                {% endif %}
+            {% endwith %}
+        </div>
+    </div>
+    
+    {% comment %} === SECCIÓN DE MULTIMEDIA === {% endcomment %}
+    {% with multimedia_existente=solicitud.encuesta_set.first.multimedia_set.all %}
+        {% if multimedia_existente %}
+            <div class="card mb-4">
+                <div class="card-header bg-secondary text-white">
+                    <h4>📂 Archivos Multimedia de la Encuesta</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% for media in multimedia_existente %}
+                            <div class="col-md-3 mb-3">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <h6 class="card-title">{{ media.tipo_multimedia }}</h6>
+                                        <a href="{{ media.ruta.url }}" target="_blank" class="btn btn-sm btn-outline-dark">Ver Archivo</a>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
                 </div>
             </div>
         {% endif %}
     {% endwith %}
-    
+
     {% comment %} === SECCIÓN DE RESOLUCIÓN === {% endcomment %}
     {% with resolucion=solicitud.resolucion_set.first %}
         {% if resolucion %}

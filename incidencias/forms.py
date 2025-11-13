@@ -40,3 +40,17 @@ class ResolucionForm(forms.ModelForm):
             'descripcion': 'Explicación de la Solución',
             'cuadrilla': 'Cuadrilla Resolutora',
         }
+
+class SolicitudDerivarForm(forms.ModelForm):
+    """
+    Formulario minimalista para derivar una solicitud,
+    solo pidiendo la Cuadrilla y observaciones opcionales.
+    """
+    class Meta:
+        model = Solicitud
+        # Solo necesitamos estos campos para la derivación
+        fields = ['cuadrilla', 'observaciones'] 
+        labels = {
+            'cuadrilla': 'Asignar a Cuadrilla 👷',
+            'observaciones': 'Notas Administrativas (Opcional)',
+        }

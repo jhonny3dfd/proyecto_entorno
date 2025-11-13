@@ -7,6 +7,7 @@ from .views import (
     SolicitudCreateView,
     ResolucionCreateView,
     SolicitudUpdateView, 
+    SolicitudDerivarView,
     # Asegúrate de importar esta función
     toggle_encuesta_status, 
 )
@@ -29,6 +30,8 @@ incidencias_urlpatterns = [
 
     # 🚨 LÍNEA CRÍTICA: Definición de la URL faltante (o mal nombrada)
     path('incidencias/<int:pk>/toggle_encuesta/', toggle_encuesta_status, name='toggle_encuesta_status'), 
+
+    path('incidencias/<int:pk>/derivar/', SolicitudDerivarView.as_view(), name='solicitud_derivar'), # <--- 🚨 NUEVA RUTA 🚨
 ]
 
 # Si usas un patrón diferente para incluir las URLs en tu proyecto principal, 

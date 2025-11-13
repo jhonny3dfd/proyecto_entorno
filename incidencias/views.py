@@ -6,6 +6,7 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.db import transaction
 from django.contrib import messages 
 from django.contrib.auth.mixins import LoginRequiredMixin
+from .forms import SolicitudForm, EncuestaForm, ResolucionForm, SolicitudDerivarForm
 
 from .models import Solicitud, Resolucion, Encuesta , Multimedia
 from .forms import SolicitudForm, EncuestaForm, ResolucionForm
@@ -230,6 +231,43 @@ class SolicitudUpdateView(LoginRequiredMixin, UpdateView):
         else:
             # Si la encuesta falla, re-renderiza con el error
             return self.render_to_response(self.get_context_data(form=form))
+
+
+class SolicitudDerivarView(LoginRequiredMixin, UpdateView):
+    """
+    Permite a un usuario de Departamento asignar una Cuadrilla 
+    y cambiar el estado de la Solicitud a 'DERIVADA'.
+    """
+    model = Solicitud
+    form_class = SolicitudDerivarForm
+    template_name = 'incidencias/solicitud_derivar_form.html'
+    
+    # Redirige al detalle después de guardar
+    def get_success_url(self):
+        return reverse('solicitud_detail', kwargs={'pk': self.object.pk})
+
+    def form_valid(self, form):
+        solicitud = form.instance
+        
+        # Validación de estado: Solo se puede derivar si está CREADA o ABIERTA
+        if solicitud.estado not in ['CREADA', 'ABIERTA']:
+            messages.error(self.request, f"La Solicitud #{solicitud.pk} ya está en estado {solicitud.estado} y no puede ser derivada.")
+            return self.form_invalid(form) # Retorna el formulario con el error
+
+        # 1. Cambiar el estado a DERIVADA (es la acción principal)
+        solicitud.estado = 'DERIVADA'
+        
+        # 2. Guarda el objeto (con la nueva cuadrilla y observaciones)
+        response = super().form_valid(form)
+
+        messages.success(self.request, f"Solicitud #{solicitud.pk} derivada a la Cuadrilla: {solicitud.cuadrilla.nombre_cuadrilla}. Estado cambiado a DERIVADA.")
+        return response
+
+    # Esto asegura que el template solicitud_derivar_form.html tenga la variable `solicitud`
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['solicitud'] = self.object 
+        return context
 
 
 # --- 7. FUNCIÓN PARA TOGGLE DE ESTADO DE ENCUESTA --- (Lógica de tu código original, no modificada)
