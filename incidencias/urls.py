@@ -9,7 +9,8 @@ from .views import (
     SolicitudUpdateView, 
     SolicitudDerivarView,
     # Asegúrate de importar esta función
-    toggle_encuesta_status, 
+    toggle_encuesta_status,
+    SolicitudDeleteView
 )
 
 incidencias_urlpatterns = [
@@ -21,6 +22,8 @@ incidencias_urlpatterns = [
 
     # Detalle (donde falla el botón)
     path('incidencias/<int:pk>/', SolicitudDetailView.as_view(), name='solicitud_detail'),
+    
+    path('incidencias/<int:pk>/eliminar/', SolicitudDeleteView.as_view(), name='solicitud_delete'),
 
     # Resolución
     path('incidencias/<int:pk>/resolver/', ResolucionCreateView.as_view(), name='solicitud_resolver'),

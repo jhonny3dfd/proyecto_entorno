@@ -7,7 +7,7 @@
     --color-sidebar-links-hover: #ffffff;
     --color-sidebar-links-active: #ffffff;
     --color-sidebar-footer: #a0aec0; /* Texto de "cerrar sesión" */
-    --color-content-bg: #f7fafc;  /* Fondo principal muy claro */
+    --color-content-bg: #f2fffb;  /* Fondo principal muy claro */
     --color-content-text: #2d3748;
     --color-primary-border: #0d47a1; /* Borde azul del login */
 }
@@ -107,4 +107,118 @@ body, html {
     padding: 40px;
     box-sizing: border-box;
     color: var(--color-content-text);
+}
+* --- ESTILOS PARA LISTAS Y TARJETAS --- */
+/* --- 1. Encabezado de Contenido --- */
+/* (Para el H2 y los botones de acción) */
+.content-header {
+    display: flex;
+    justify-content: space-between; /* Título a la izquierda, botones a la derecha */
+    align-items: center;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.content-header h2 {
+    margin: 0;
+    color: var(--color-content-text);
+}
+
+.content-header .actions-header {
+    display: flex;
+    gap: 10px;
+}
+
+/* --- 2. Estilos de Botones --- */
+/* (Estilos genéricos que pediste) */
+.btn {
+    display: inline-block;
+    padding: 10px 15px;
+    font-size: 14px;
+    font-weight: bold;
+    text-align: center;
+    text-decoration: none;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+.btn:hover {
+    opacity: 0.85;
+}
+.btn-sm { /* Para botones pequeños en tarjetas */
+    padding: 5px 10px;
+    font-size: 12px;
+}
+
+/* Colores de Botones */
+.btn-primary { background-color: #0d47a1; color: white; }
+.btn-secondary { background-color: #6c757d; color: white; }
+.btn-success { background-color: #28a745; color: white; }
+.btn-danger { background-color: #dc3545; color: white; }
+.btn-warning { background-color: #ffc107; color: #212529; }
+.btn-info { background-color: #17a2b8; color: white; }
+
+
+/* --- 3. Insignias de Estado (Badges) --- */
+.badge {
+    padding: 4px 8px;
+    font-size: 12px;
+    font-weight: bold;
+    border-radius: 4px;
+    color: white;
+}
+.badge-success { background-color: #28a745; }
+.badge-danger { background-color: #dc3545; }
+
+
+/* --- 4. Cuadrícula de Tarjetas --- */
+.card-grid {
+    display: grid;
+    /* Crea columnas automáticas. Cada tarjeta tendrá min. 300px */
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 25px; /* Espacio entre las tarjetas */
+}
+
+/* --- 5. La Tarjeta (Card) --- */
+.card {
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    overflow: hidden; /* Asegura que el footer se mantenga dentro */
+    display: flex;
+    flex-direction: column; /* Apila el cuerpo y el footer */
+}
+
+.card-body {
+    padding: 20px;
+    flex-grow: 1; /* Hace que el cuerpo crezca para llenar el espacio */
+}
+
+.card-body h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: var(--color-primary-border); /* Título de la tarjeta en azul */
+}
+
+/* Estilo para los datos (Encargado, Estado, etc.) */
+.card-data {
+    margin-bottom: 10px;
+    font-size: 15px;
+}
+.card-data strong {
+    color: #555;
+    display: inline-block;
+    min-width: 90px; /* Alinea los valores */
+}
+
+/* Footer de la Tarjeta (para los botones de acción) */
+.card-footer {
+    padding: 15px 20px;
+    background-color: #f9fafb; /* Un gris muy claro para el footer */
+    border-top: 1px solid #f0f0f0;
+    display: flex;
+    flex-wrap: wrap; /* Si hay muchos botones, pasan a la línea de abajo */
+    gap: 10px;
 }

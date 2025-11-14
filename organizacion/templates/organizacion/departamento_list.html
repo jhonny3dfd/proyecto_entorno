@@ -25,7 +25,7 @@
                     <th>Dirección Asignada</th>
                     <th>Encargado</th>
                     <th>Estado</th>
-                    <th>Acciones</th>
+                    <th>Acciones (Ver, Editar, Bloquear)</th>
                 </tr>
             </thead>
             <tbody>
@@ -36,11 +36,11 @@
                     <td>{{ depto.direccion.nombre_direccion }}</td>
                     <td>{{ depto.nombre_encargado }}</td>
                     <td>
-                        {# Estado: Se usa 'badge' para un estilo moderno #}
+                        {# Se usan clases 'badge' para un estilo más moderno del estado #}
                         {% if depto.activo %}
-                            <span class="badge bg-success">Activo</span>
+                            <span class="badge badge-success">Activo</span>
                         {% else %}
-                            <span class="badge bg-danger">Inactivo/Bloqueado</span>
+                            <span class="badge badge-danger">Bloqueada</span>
                         {% endif %}
                     </td>
                     <td>

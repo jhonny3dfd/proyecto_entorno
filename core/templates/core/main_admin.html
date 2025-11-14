@@ -14,5 +14,177 @@
 {% endblock navbar %}
 
 {% block content %}
-    <h1>Bienvenido al Panel de Administración</h1>
+<h1>Bienvenido al Panel de Administración</h1>
+
+<style>
+    .dashboard-layout {
+        margin-top: 30px;
+        display: flex;
+        justify-content: flex-end; /* manda el calendario a la derecha */
+    }
+
+    .calendar-card {
+        background: #ffffff;
+        border-radius: 16px;
+        padding: 20px 24px;
+        box-shadow: 0 10px 25px rgba(15, 23, 42, 0.12);
+        max-width: 380px;
+        width: 100%;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .calendar-title {
+        font-size: 20px;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+
+    .calendar-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+        gap: 8px;
+    }
+
+    .calendar-month {
+        font-weight: 600;
+        font-size: 16px;
+    }
+
+    .cal-btn {
+        border: none;
+        border-radius: 999px;
+        padding: 6px 10px;
+        cursor: pointer;
+        background: #e5e7eb;
+        font-size: 14px;
+        line-height: 1;
+        transition: background 0.15s ease, transform 0.1s ease;
+    }
+
+    .cal-btn:hover {
+        background: #d1d5db;
+        transform: translateY(-1px);
+    }
+
+    .calendar-table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+        font-size: 13px;
+    }
+
+    .calendar-table thead th {
+        text-align: center;
+        padding: 6px 0;
+        font-weight: 600;
+        color: #6b7280;
+    }
+
+    .calendar-table tbody td {
+        text-align: center;
+        padding: 6px 0;
+        height: 32px;
+        vertical-align: middle;
+        border-radius: 8px;
+        cursor: default;
+        position: relative;
+    }
+
+    .calendar-table tbody td:not(.empty):hover {
+        background: #e5f0ff;
+    }
+
+    .calendar-table tbody td.hoy {
+        background: #2a3855;
+        color: #ffffff;
+        font-weight: 700;
+        box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.3);
+    }
+
+    .calendar-table tbody td.empty {
+        cursor: default;
+    }
+</style>
+
+<div class="dashboard-layout">
+    <div class="calendar-card">
+        <div class="calendar-title">Calendario</div>
+
+        <div class="calendar-header">
+            <button id="prevBtn" class="cal-btn">←</button>
+            <span id="mesAño" class="calendar-month"></span>
+            <button id="nextBtn" class="cal-btn">→</button>
+        </div>
+
+        <div id="diasGrid"></div>
+    </div>
+</div>
+
+<script>
+    const meses = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
+    const hoy = new Date(); // día actual real
+
+    let fecha = new Date();
+    let año = fecha.getFullYear();
+    let mes = fecha.getMonth();
+
+    function renderizar() {
+        const diasSemana = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
+
+        let html = '<table class="calendar-table">';
+        html += '<thead><tr>';
+        for (let d of diasSemana) {
+            html += '<th>' + d + '</th>';
+        }
+        html += '</tr></thead><tbody><tr>';
+
+        document.getElementById('mesAño').textContent = meses[mes] + ' ' + año;
+
+        let primerDia = new Date(año, mes, 1).getDay();
+        let diasMes = new Date(año, mes + 1, 0).getDate();
+
+        // celdas vacías antes del primer día
+        for (let i = 0; i < primerDia; i++) {
+            html += '<td class="empty"></td>';
+        }
+
+        // días del mes
+        for (let dia = 1; dia <= diasMes; dia++) {
+            if ((primerDia + dia - 1) % 7 === 0 && dia !== 1) {
+                html += '</tr><tr>';
+            }
+
+            const esHoy = (
+                año === hoy.getFullYear() &&
+                mes === hoy.getMonth() &&
+                dia === hoy.getDate()
+            );
+
+            if (esHoy) {
+                html += '<td class="hoy">' + dia + '</td>';
+            } else {
+                html += '<td>' + dia + '</td>';
+            }
+        }
+
+        html += '</tr></tbody></table>';
+        document.getElementById('diasGrid').innerHTML = html;
+    }
+
+    document.getElementById('prevBtn').onclick = function() {
+        mes--;
+        if (mes < 0) { mes = 11; año--; }
+        renderizar();
+    };
+
+    document.getElementById('nextBtn').onclick = function() {
+        mes++;
+        if (mes > 11) { mes = 0; año++; }
+        renderizar();
+    };
+
+    renderizar();
+</script>
 {% endblock content %}
