@@ -9,7 +9,6 @@ from django.urls import reverse
 # --- Vistas de Direccion (CRUD) ---
 
 class DireccionListView(ListView):
-    """Muestra un listado de todas las Direcciones."""
     model = Direccion 
     template_name = 'organizacion/direccion_list.html'
     context_object_name = 'direcciones'
@@ -32,10 +31,7 @@ class DireccionUpdateView(UpdateView):
     success_url = reverse_lazy('organizacion:direccion_list')
 
     def post(self, request, *args, **kwargs):
-        # 1. Obtener el objeto actual (Direccion)
         self.object = self.get_object() 
-        
-        # 2. Verificar si viene la acción 'action' en la URL (Query Parameter)
         action = request.GET.get('action')
         
         if action in ['bloquear', 'activar']:
@@ -48,14 +44,8 @@ class DireccionUpdateView(UpdateView):
             
             return redirect(self.get_success_url())
             
-        # 3. Si no es una accion especial, ejecutar el POST normal (edicion de formulario)
+        # Si no es una accion especial, ejecutar el POST normal (edicion de formulario)
         return super().post(request, *args, **kwargs)
-
-class DireccionDeleteView(DeleteView):
-    model = Direccion
-    template_name = 'organizacion/direccion_confirm_delete.html' 
-    success_url = reverse_lazy('organizacion:direccion_list')
-
 
 # --- Vistas de Departamento (CRUD) ---
 
@@ -106,10 +96,6 @@ class DepartamentoUpdateView(UpdateView):
             
         return super().post(request, *args, **kwargs)
 
-class DepartamentoDeleteView(DeleteView):
-    model = Departamento
-    template_name = 'organizacion/departamento_confirm_delete.html' 
-    success_url = reverse_lazy('organizacion:departamento_list')
 
 
 #Vista de Cuadrillas
