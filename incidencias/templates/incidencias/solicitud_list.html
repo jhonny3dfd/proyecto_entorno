@@ -56,7 +56,13 @@
                                             {% if sol.estado != 'FINALIZADA' %}
                                                 <a href="{% url 'solicitud_update' pk=sol.pk %}" class="btn btn-sm btn-warning">Editar</a>
                                             {% endif %}
-                                        </td>
+
+                                            {% comment %} Permitir eliminar si el estado lo permite (Ej: CREADA o RECHAZADA) {% endcomment %}
+                                            {% if sol.estado == 'CREADA' or sol.estado == 'RECHAZADA' %}
+                                                <a href="{% url 'solicitud_delete' pk=sol.pk %}" class="btn btn-sm btn-danger" title="Eliminar Solicitud">
+                                                    <i class="fa fa-trash"></i>
+                                            {% endif %}
+                                            </td>
                                     </tr>
                                 {% endwith %}
                             {% endfor %}

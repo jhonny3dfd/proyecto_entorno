@@ -1,54 +1,141 @@
-{% extends "base.html" %}
+{% extends "base_admin.html" %}
+{% load static %}
+
+{% block title %}Detalle de Departamento: {{ departamento.departamento }}{% endblock %}
 
 {% block content %}
-    <h2>Detalle de Departamento: {{ departamento.departamento }}</h2>
+
+<div class="box">
     
-    <p><strong>Nombre del Departamento:</strong> {{ departamento.departamento }}</p>
-    <p><strong>Dirección a la que pertenece:</strong> 
-        <a href="{% url 'organizacion:direccion_detail' departamento.direccion.pk %}">
-            {{ departamento.direccion.nombre_direccion }}
+    {# TÍTULO PRINCIPAL Y ESTADO #}
+    <div class="level">
+        <div class="level-left">
+            <h2 class="title is-3">
+                Detalle de Departamento: <strong>{{ departamento.departamento }}</strong>
+            </h2>
+        </div>
+        <div class="level-right">
+            {# Mostramos el estado con tags de Bulma #}
+            {% if departamento.activo %}
+                <span class="tag is-success is-large">Activo</span>
+            {% else %}
+                <span class="tag is-danger is-large">Bloqueado</span>
+            {% endif %}
+        </div>
+    </div>
+
+    {# DETALLES DEL DEPARTAMENTO #}
+    <div class="content">
+        <p>
+            <strong>Dirección a la que pertenece:</strong> 
+            {# Enlace estilizado a la Dirección padre #}
+            <a href="{% url 'organizacion:direccion_detail' departamento.direccion.pk %}" class="tag is-link is-light">
+                {{ departamento.direccion.nombre_direccion }}
+            </a>
+        </p>
+        <p><strong>Encargado:</strong> {{ departamento.nombre_encargado }}</p>
+        <p><strong>Correo:</strong> {{ departamento.correo_encargado }}</p>
+    </div>
+
+    {# BOTONES DE ACCIÓN PRINCIPALES #}
+    <div class="buttons">
+        {# Botón Editar #}
+        <a href="{% url 'organizacion:departamento_update' departamento.pk %}" class="button is-warning is-light">
+            <span class="icon"><i class="fas fa-edit"></i></span>
+            <span>Editar Departamento</span>
         </a>
-    </p>
-    <p><strong>Encargado:</strong> {{ departamento.nombre_encargado }}</p>
-    <p><strong>Correo:</strong> {{ departamento.correo_encargado }}</p>
-    <p><strong>Estado:</strong> 
+        
+        {# Botones Activar/Bloquear (usando la acción GET que ya implementaste en views.py) #}
         {% if departamento.activo %}
-            <span style="color: green;">Activo</span>
+            <a href="{% url 'organizacion:departamento_update' departamento.pk %}?action=bloquear" class="button is-danger is-light">
+                <span class="icon"><i class="fas fa-lock"></i></span>
+                <span>Bloquear</span>
+            </a>
         {% else %}
-            <span style="color: red;">Bloqueado</span>
+            <a href="{% url 'organizacion:departamento_update' departamento.pk %}?action=activar" class="button is-success is-light">
+                <span class="icon"><i class="fas fa-lock-open"></i></span>
+                <span>Activar</span>
+            </a>
         {% endif %}
-    </p>
+        
+        {# Botón Eliminar #}
+        <a href="{% url 'organizacion:departamento_delete' departamento.pk %}" class="button is-danger is-outlined">
+            <span class="icon"><i class="fas fa-trash"></i></span>
+            <span>Eliminar</span>
+        </a>
+    </div>
+</div>
+
+{# SECCIÓN DE CUADRILLAS ASOCIADAS #}
+<div class="box mt-5">
     
+    <div class="level">
+        <div class="level-left">
+            <h3 class="title is-4">Cuadrillas dependientes:</h3>
+        </div>
+        <div class="level-right">
+            {# Botón Crear Cuadrilla (Usando la URL que tenías: cuadrilla_create) #}
+            {# NOTA: Tu views.py espera 'departamento_pk' como parámetro de URL (kwargs), no de query (?id=). Confirmar que la URL es: organizacion:cuadrilla_create <pk> #}
+            <a href="{% url 'organizacion:cuadrilla_create' departamento.pk %}" 
+               class="button is-primary">
+                <span class="icon"><i class="fas fa-plus"></i></span>
+                <span>Crear Nueva Cuadrilla</span>
+            </a>
+        </div>
+    </div>
+
     <hr>
     
-    <h3>Cuadrillas en este Departamento:</h3>
-    
-    <p>
-        {# NUEVO ENLACE: Botón para crear una cuadrilla asociada a este departamento #}
-        <a href="{% url 'organizacion:cuadrilla_create' departamento.pk %}">Crear Nueva Cuadrilla</a>
-    </p>
-    
     {% if departamento.cuadrilla_set.all %}
-        <ul>
-            {% for cuadrilla in departamento.cuadrilla_set.all %}
-                <li>
-                    {# Enlazar al detalle o edición de la cuadrilla (lo crearemos en el punto 3) #}
-                    <a href="{% url 'organizacion:cuadrilla_detail' cuadrilla.pk %}">
-                        {{ cuadrilla.nombre_cuadrilla }}
-                    </a>
-                </li>
-            {% endfor %}
-        </ul>
+        {# Usamos la tabla de Bulma para mostrar la lista de cuadrillas #}
+        <table class="table is-fullwidth is-striped is-hoverable">
+            <thead>
+                <tr>
+                    <th>Nombre de la Cuadrilla</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for cuadrilla in departamento.cuadrilla_set.all %}
+                    <tr>
+                        <td>
+                            {# Enlazar al detalle o edición de la cuadrilla #}
+                            <a href="{% url 'organizacion:cuadrilla_detail' cuadrilla.pk %}" class="has-text-info-dark">
+                                {{ cuadrilla.nombre_cuadrilla }}
+                            </a>
+                        </td>
+                        <td>
+                            <div class="buttons is-small">
+                                <a href="{% url 'organizacion:cuadrilla_detail' cuadrilla.pk %}" class="button is-info is-light">Ver</a>
+                                <a href="{% url 'organizacion:cuadrilla_update' cuadrilla.pk %}" class="button is-warning is-light">Editar</a>
+                                <a href="{% url 'organizacion:cuadrilla_delete' cuadrilla.pk %}" class="button is-danger is-light">Eliminar</a>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
     {% else %}
-        <p>Este Departamento no tiene cuadrillas asignadas.</p>
+        <div class="notification is-info is-light">
+            Este Departamento no tiene cuadrillas asignadas.
+        </div>
     {% endif %}
 
     <hr>
     
-    <p>
-        <a href="{% url 'organizacion:direccion_detail' departamento.direccion.pk %}">Volver a la Dirección {{ departamento.direccion.nombre_direccion }}</a>
-        | 
-        <a href="{% url 'organizacion:departamento_list' %}">Volver al listado de Departamentos</a>
-    </p>
+    {# Botones Volver #}
+    <div class="buttons">
+        <a href="{% url 'organizacion:direccion_detail' departamento.direccion.pk %}" class="button is-link is-light">
+            <span class="icon"><i class="fas fa-arrow-left"></i></span>
+            <span>Volver a la Dirección {{ departamento.direccion.nombre_direccion }}</span>
+        </a>
+        <a href="{% url 'organizacion:departamento_list' %}" class="button is-link is-light is-outlined">
+            <span class="icon"><i class="fas fa-list"></i></span>
+            <span>Listado de Departamentos</span>
+        </a>
+    </div>
+    
+</div>
 
 {% endblock content %}

@@ -1,35 +1,131 @@
-{% extends "base.html" %}
+{% extends "base_admin.html" %}
+{% load static %}
+
+{% block title %}Detalle de Dirección: {{ direccion.nombre_direccion }}{% endblock %}
 
 {% block content %}
-    <h2>Detalle de Dirección: {{ direccion.nombre_direccion }}</h2>
+
+<div class="box">
     
+    {# TÍTULO PRINCIPAL Y ESTADO #}
+    <div class="level">
+        <div class="level-left">
+            <h2 class="title is-3">
+                Detalle de Dirección: <strong>{{ direccion.nombre_direccion }}</strong>
+            </h2>
+        </div>
+        <div class="level-right">
+            {% if direccion.activa %}
+                <span class="tag is-success is-large">Activa</span>
+            {% else %}
+                <span class="tag is-danger is-large">Bloqueada</span>
+            {% endif %}
+        </div>
+    </div>
+
+    {# DETALLES DE LA DIRECCIÓN #}
+    <div class="content">
+        <p><strong>Encargado:</strong> {{ direccion.nombre_encargado }}</p>
+        <p><strong>Correo:</strong> {{ direccion.correo_encargado }}</p>
+    </div>
+
+    {# BOTONES DE ACCIÓN PRINCIPALES #}
+    <div class="buttons">
+        {# Botón Editar #}
+        <a href="{% url 'organizacion:direccion_update' direccion.pk %}" class="button is-warning is-light">
+            <span class="icon"><i class="fas fa-edit"></i></span>
+            <span>Editar Dirección</span>
+        </a>
+        
+        {# Botones Activar/Bloquear (usando la acción GET que ya implementaste) #}
+        {% if direccion.activa %}
+            <a href="{% url 'organizacion:direccion_update' direccion.pk %}?action=bloquear" class="button is-danger is-light">
+                <span class="icon"><i class="fas fa-lock"></i></span>
+                <span>Bloquear</span>
+            </a>
+        {% else %}
+            <a href="{% url 'organizacion:direccion_update' direccion.pk %}?action=activar" class="button is-success is-light">
+                <span class="icon"><i class="fas fa-lock-open"></i></span>
+                <span>Activar</span>
+            </a>
+        {% endif %}
+        
+        {# Botón Eliminar #}
+        <a href="{% url 'organizacion:direccion_delete' direccion.pk %}" class="button is-danger is-outlined">
+            <span class="icon"><i class="fas fa-trash"></i></span>
+            <span>Eliminar</span>
+        </a>
+    </div>
+</div>
+
+{# SECCIÓN DE DEPARTAMENTOS ASOCIADOS #}
+<div class="box mt-5">
+    
+    <div class="level">
+        <div class="level-left">
+            <h3 class="title is-4">Departamentos en esta Dirección:</h3>
+        </div>
+        <div class="level-right">
+            {# Botón Crear Departamento con preselección de Dirección #}
+            <a href="{% url 'organizacion:departamento_create' %}?direccion_id={{ direccion.pk }}" 
+               class="button is-primary">
+                <span class="icon"><i class="fas fa-plus"></i></span>
+                <span>Crear Nuevo Departamento</span>
+            </a>
+        </div>
+    </div>
+
     <hr>
     
-    <h3>Departamentos en esta Dirección:</h3>
-    
-    <p>
-        {# ¡NUEVO BOTÓN! El 'direccion_id' en la URL ayuda a la vista a preseleccionar la dirección #}
-        <a href="{% url 'organizacion:departamento_create' %}?direccion_id={{ direccion.pk }}">
-            + Crear Nuevo Departamento en esta Dirección
-        </a>
-    </p>
-
     {% if direccion.departamento_set.all %}
-        <ul>
+        {# Usamos columnas de Bulma para mostrar los departamentos como tarjetas #}
+        <div class="columns is-multiline">
             {% for depto in direccion.departamento_set.all %}
-                <li>
-                    <a href="{% url 'organizacion:departamento_detail' depto.pk %}">
-                        {{ depto.departamento }}
-                    </a> 
-                    (Encargado: {{ depto.nombre_encargado }})
-                </li>
+                <div class="column is-one-third">
+                    <div class="card is-shadowless" style="border: 1px solid #dbdbdb;">
+                        <header class="card-header">
+                            <p class="card-header-title">
+                                {{ depto.departamento }}
+                            </p>
+                            {% if depto.activo %}
+                                <div class="card-header-icon"><span class="tag is-success is-light">Activo</span></div>
+                            {% else %}
+                                <div class="card-header-icon"><span class="tag is-danger is-light">Bloqueado</span></div>
+                            {% endif %}
+                        </header>
+                        <div class="card-content py-3">
+                            <div class="content is-small">
+                                <p>Encargado: <strong>{{ depto.nombre_encargado }}</strong></p>
+                                <p>Correo: {{ depto.correo_encargado }}</p>
+                            </div>
+                        </div>
+                        <footer class="card-footer">
+                            {# Enlace al detalle del Departamento #}
+                            <a href="{% url 'organizacion:departamento_detail' depto.pk %}" class="card-footer-item button is-info is-light is-small">
+                                Ver Detalle
+                            </a>
+                            {# Enlace a la edición del Departamento #}
+                            <a href="{% url 'organizacion:departamento_update' depto.pk %}" class="card-footer-item button is-warning is-light is-small">
+                                Editar
+                            </a>
+                        </footer>
+                    </div>
+                </div>
             {% endfor %}
-        </ul>
+        </div>
+        
     {% else %}
-        <p>Esta Dirección no tiene departamentos registrados.</p>
+        <div class="notification is-info is-light">
+            Esta Dirección no tiene departamentos registrados.
+        </div>
     {% endif %}
 
     <hr>
+    <p><a href="{% url 'organizacion:direccion_list' %}" class="button is-link is-light">
+        <span class="icon"><i class="fas fa-arrow-left"></i></span>
+        <span>Volver al listado de Direcciones</span>
+    </a></p>
     
-    <p><a href="{% url 'organizacion:direccion_list' %}">Volver al listado de Direcciones</a></p>
+</div>
+
 {% endblock content %}

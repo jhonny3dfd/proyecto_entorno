@@ -1,14 +1,13 @@
-# organizacion/views.py
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 from django.urls import reverse_lazy 
 from .models import Direccion, Departamento, Cuadrilla
 from django.shortcuts import redirect 
 from django.urls import reverse
-
-
+from rest_framework import viewsets
 # --- Vistas de Direccion (CRUD) ---
 
 class DireccionListView(ListView):
+    """Muestra un listado de todas las Direcciones."""
     model = Direccion 
     template_name = 'organizacion/direccion_list.html'
     context_object_name = 'direcciones'
@@ -32,6 +31,7 @@ class DireccionUpdateView(UpdateView):
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object() 
+        
         action = request.GET.get('action')
         
         if action in ['bloquear', 'activar']:
@@ -44,8 +44,13 @@ class DireccionUpdateView(UpdateView):
             
             return redirect(self.get_success_url())
             
-        # Si no es una accion especial, ejecutar el POST normal (edicion de formulario)
         return super().post(request, *args, **kwargs)
+
+class DireccionDeleteView(DeleteView):
+    model = Direccion
+    template_name = 'organizacion/direccion_confirm_delete.html' 
+    success_url = reverse_lazy('organizacion:direccion_list')
+
 
 # --- Vistas de Departamento (CRUD) ---
 
@@ -96,9 +101,13 @@ class DepartamentoUpdateView(UpdateView):
             
         return super().post(request, *args, **kwargs)
 
+class DepartamentoDeleteView(DeleteView):
+    model = Departamento
+    template_name = 'organizacion/departamento_confirm_delete.html' 
+    success_url = reverse_lazy('organizacion:departamento_list')
 
 
-#Vista de Cuadrillas
+# Vista de Cuadrillas
 
 class CuadrillaListView(ListView):
     model = Cuadrilla
@@ -115,7 +124,6 @@ class CuadrillaCreateView(CreateView):
     fields = ['departamento', 'nombre_cuadrilla'] 
     template_name = 'organizacion/cuadrilla_form.html' 
 
-    # 1. Obtiene el 'departamento_pk' de la URL y lo usa como valor inicial del campo 'departamento'
     def get_initial(self):
         initial = super().get_initial()
         departamento_pk = self.kwargs.get('departamento_pk')
@@ -123,12 +131,12 @@ class CuadrillaCreateView(CreateView):
             initial['departamento'] = departamento_pk
         return initial
 
-    # 2. Redirecciona al detalle del Departamento (no al listado de cuadrillas)
     def get_success_url(self):
         departamento_pk = self.kwargs.get('departamento_pk')
         if departamento_pk:
             return reverse('organizacion:departamento_detail', kwargs={'pk': departamento_pk})
-        return reverse_lazy('organizacion:departamento_list') 
+        return reverse_lazy('organizacion:departamento_list')
+     
 class CuadrillaUpdateView(UpdateView):
     model = Cuadrilla
     fields = ['departamento', 'nombre_cuadrilla'] 

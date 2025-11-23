@@ -1,0 +1,37 @@
+{% extends "core/main_admin.html" %}
+
+{% block title %}Confirmar Eliminación de Solicitud{% endblock %}
+
+{% block content %}
+    <div class="container my-5">
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card border-danger">
+                    <div class="card-header bg-danger text-white">
+                        <h1 class="h4 mb-0">⚠️ Confirmar Eliminación</h1>
+                    </div>
+                    <div class="card-body">
+                        
+                        <p class="lead">¿Estás absolutamente seguro de que deseas eliminar la Solicitud **#{{ object.pk }}**?</p>
+                        <p class="mb-4">
+                            **Tipo de Incidencia:** **{{ object.tipo_incidencia }}** <br>
+                            *Esta acción es irreversible y eliminará todos los datos asociados a la Solicitud (Encuestas, Resoluciones, Multimedia, etc.).*
+                        </p>
+
+                        <form method="post">
+                            {% csrf_token %}
+                            
+                            <button type="submit" class="btn btn-danger btn-lg me-3">
+                                Sí, Eliminar Permanentemente
+                            </button>
+                            
+                            <a href="{% url 'solicitud_detail' pk=object.pk %}" class="btn btn-secondary btn-lg">
+                                Cancelar y Volver
+                            </a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

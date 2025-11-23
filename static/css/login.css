@@ -181,7 +181,7 @@ body, html {
 /* --- Columna Derecha: Decoración --- */
 .login-decoration {
     flex: 0 0 55%; /* La columna decorativa ocupa el 55% */
-    background-color: #f0f8ff; /* Fondo celeste claro */
+    background-color: #f2fffb; /* Fondo celeste claro */
     position: relative;
     overflow: hidden;
 }
